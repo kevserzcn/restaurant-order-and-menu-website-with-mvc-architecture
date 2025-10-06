@@ -252,9 +252,9 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 
 ## İletişim
 
-- Proje Sahibi: [Your Name]
-- Email: your.email@example.com
-- GitHub: [Your GitHub Profile]
+- Proje Sahibi: Kevser ÖZCAN
+- Email: kevser_ozcan03@hotmail.com
+- GitHub: kevserzcn
 
 ## Changelog
 
@@ -267,3 +267,4 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 - SMS entegrasyonu
 - Docker desteği
 #
+
