@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Ödeme - {{ current_user.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-credit-card me-2"></i>Ödeme</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sipariş Detayları</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Ürün</th>
+                                <th>Miktar</th>
+                                <th>Birim Fiyat</th>
+                                <th>Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.price }} ₺</td>
+                                <td>{{ item.quantity * item.price }} ₺</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-primary">
+                                <th colspan="3">Toplam</th>
+                                <th>{{ "%.2f"|format(total) }} ₺</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Ödeme Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user.payment') }}">
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Ödeme Yöntemi</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cash" value="cash" checked>
+                            <label class="form-check-label" for="cash">
+                                <i class="fas fa-money-bill-wave me-2"></i>Nakit
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="card" value="card">
+                            <label class="form-check-label" for="card">
+                                <i class="fas fa-credit-card me-2"></i>Kredi/Banka Kartı
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="mobile" value="mobile">
+                            <label class="form-check-label" for="mobile">
+                                <i class="fas fa-mobile-alt me-2"></i>Mobil Ödeme
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between">
+                            <span class="h5">Toplam Tutar:</span>
+                            <span class="h4 text-primary">{{ "%.2f"|format(total) }} ₺</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Ödemeyi kasaya yönlendirmek istediğinizden emin misiniz?')">
+                            <i class="fas fa-cash-register me-2"></i>Ödemeyi Kasaya Yönlendir
+                        </button>
+                    </div>
+                    
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Ödeme kasada tamamlandıktan sonra faturanız SMS ile gönderilecektir.
+                        </small>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6>Ödeme Sonrası</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>Ödeme onayı</li>
+                    <li><i class="fas fa-file-pdf text-danger me-2"></i>PDF fatura oluşturma</li>
+                    <li><i class="fas fa-sms text-info me-2"></i>SMS ile fatura gönderimi</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

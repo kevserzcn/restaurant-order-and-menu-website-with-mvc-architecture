@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Sepetim - {{ current_user.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-shopping-cart me-2"></i>Sepetim</h2>
+    </div>
+</div>
+
+{% if order.items.count() > 0 %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sepetinizdeki Ürünler</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Ürün</th>
+                                <th>Birim Fiyat</th>
+                                <th>Miktar</th>
+                                <th>Toplam</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            {% if item.product.image_url %}
+                                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover;" class="rounded">
+                                            {% else %}
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-utensils text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ item.product.name }}</h6>
+                                            <small class="text-muted">{{ item.product.category|title }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ item.price }} ₺</td>
+                                <td>
+                                    <form class="update-quantity-form d-inline">
+                                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                                        <div class="input-group" style="width: 120px;">
+                                            <input type="number" name="quantity" class="form-control form-control-sm" value="{{ item.quantity }}" min="1" max="10">
+                                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-sync"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </td>
+                                <td class="fw-bold">{{ item.quantity * item.price }} ₺</td>
+                                <td>
+                                    <a href="{{ url_for('user.remove_from_cart', item_id=item.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Bu ürünü sepetten çıkarmak istediğinizden emin misiniz?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sipariş Özeti</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Ürün Sayısı:</span>
+                    <span class="fw-bold">{{ order.items.count() }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Toplam Tutar:</span>
+                    <span class="fw-bold text-primary h5">{{ "%.2f"|format(total) }} ₺</span>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('user.place_order') }}" class="btn btn-success btn-lg" onclick="return confirm('Siparişinizi onaylıyor musunuz?')">
+                        <i class="fas fa-check me-2"></i>Sipariş Ver
+                    </a>
+                    <a href="{{ url_for('user.menu') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus me-2"></i>Ürün Ekle
+                    </a>
+                    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>Ana Sayfa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+            <h3>Sepetiniz Boş</h3>
+            <p class="text-muted">Sepetinize ürün eklemek için menüyü ziyaret edin.</p>
+            <a href="{{ url_for('user.menu') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-book me-2"></i>Menüyü Görüntüle
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Miktar güncelleme
+    $('.update-quantity-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        var form = $(this);
+        var itemId = form.find('input[name="item_id"]').val();
+        var quantity = form.find('input[name="quantity"]').val();
+        
+        $.ajax({
+            url: '{{ url_for("user.update_cart") }}',
+            method: 'POST',
+            data: {
+                item_id: itemId,
+                quantity: quantity
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    showAlert('danger', response.message);
+                }
+            },
+            error: function() {
+                showAlert('danger', 'Bir hata oluştu!');
+            }
+        });
+    });
+    
+    function showAlert(type, message) {
+        var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                       message +
+                       '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                       '</div>';
+        $('main .container').prepend(alertHtml);
+        
+        setTimeout(function() {
+            $('.alert').fadeOut();
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Ana Sayfa - {{ current_user.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white rounded p-4 mb-4">
+            <h2><i class="fas fa-home me-2"></i>Hoş Geldiniz, {{ current_user.name }}!</h2>
+            <p class="mb-0">Lezzetli yemeklerimizi keşfedin ve sipariş verin.</p>
+        </div>
+    </div>
+</div>
+
+{% if active_order %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h5><i class="fas fa-shopping-cart me-2"></i>Aktif Siparişiniz Var</h5>
+            <p class="mb-2">Sepetinizde {{ active_order.items.count() }} ürün bulunuyor.</p>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('user.cart') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-shopping-cart me-1"></i>Sepeti Görüntüle
+                </a>
+                <a href="{{ url_for('user.place_order') }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-check me-1"></i>Sipariş Ver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-12">
+        <h3 class="mb-4">Menü Kategorileri</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-drumstick-bite fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Yemekler</h5>
+                <p class="card-text">{{ yemekler|length }} çeşit lezzetli yemek</p>
+                <a href="{{ url_for('user.menu') }}#yemekler" class="btn btn-primary">
+                    <i class="fas fa-eye me-1"></i>Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-birthday-cake fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Tatlılar</h5>
+                <p class="card-text">{{ tatlilar|length }} çeşit tatlı</p>
+                <a href="{{ url_for('user.menu') }}#tatlilar" class="btn btn-warning">
+                    <i class="fas fa-eye me-1"></i>Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-coffee fa-3x text-info mb-3"></i>
+                <h5 class="card-title">İçecekler</h5>
+                <p class="card-text">{{ icecekler|length }} çeşit içecek</p>
+                <a href="{{ url_for('user.menu') }}#icecekler" class="btn btn-info">
+                    <i class="fas fa-eye me-1"></i>Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Salatalar</h5>
+                <p class="card-text">{{ salatalar|length }} çeşit salata</p>
+                <a href="{{ url_for('user.menu') }}#salatalar" class="btn btn-success">
+                    <i class="fas fa-eye me-1"></i>Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <a href="{{ url_for('user.menu') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-book me-2"></i>Tüm Menüyü Görüntüle
+            </a>
+            <a href="{{ url_for('user.orders') }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-list me-2"></i>Sipariş Geçmişim
+            </a>
+        </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Sepete ekle butonlarına click event ekle
+    $('.add-to-cart-btn').click(function(e) {
+        e.preventDefault();
+        
+        const productId = $(this).data('product-id');
+        const quantity = $(this).closest('.card-body').find('input[name="quantity"]').val() || 1;
+        
+        // AJAX ile sepete ekle
+        $.ajax({
+            url: '{{ url_for("user.add_to_cart") }}',
+            method: 'POST',
+            data: {
+                product_id: productId,
+                quantity: quantity
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Başarılı pop-up göster
+                    showSuccessModal(response.product_name, response.quantity);
+                    
+                    // Sepet sayısını güncelle
+                    updateCartCount(response.cart_count);
+                } else {
+                    // Hata mesajı göster
+                    showErrorModal(response.message);
+                }
+            },
+            error: function() {
+                showErrorModal('Bir hata oluştu!');
+            }
+        });
+    });
+    
+    // Başarılı pop-up fonksiyonu
+    function showSuccessModal(productName, quantity) {
+        const modalHtml = `
+            <div class="modal fade" id="successModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-check-circle me-2"></i>Başarılı!
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <i class="fas fa-shopping-cart fa-3x text-success mb-3"></i>
+                            <h4>${productName}</h4>
+                            <p class="mb-0">${quantity} adet sepete eklendi!</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Tamam</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Eski modal varsa kaldır
+        $('#successModal').remove();
+        
+        // Yeni modal ekle ve göster
+        $('body').append(modalHtml);
+        $('#successModal').modal('show');
+        
+        // Modal kapandığında DOM'dan kaldır
+        $('#successModal').on('hidden.bs.modal', function() {
+            $(this).remove();
+        });
+    }
+    
+    // Hata pop-up fonksiyonu
+    function showErrorModal(message) {
+        const modalHtml = `
+            <div class="modal fade" id="errorModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-exclamation-circle me-2"></i>Hata!
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <i class="fas fa-times-circle fa-3x text-danger mb-3"></i>
+                            <p class="mb-0">${message}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tamam</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Eski modal varsa kaldır
+        $('#errorModal').remove();
+        
+        // Yeni modal ekle ve göster
+        $('body').append(modalHtml);
+        $('#errorModal').modal('show');
+        
+        // Modal kapandığında DOM'dan kaldır
+        $('#errorModal').on('hidden.bs.modal', function() {
+            $(this).remove();
+        });
+    }
+    
+    // Sepet sayısını güncelle
+    function updateCartCount(count) {
+        $('.cart-count').text(count);
+    }
+});
+</script>
+{% endblock %}

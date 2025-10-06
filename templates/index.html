@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Ana Sayfa - Ablaların Yeri{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white rounded p-5 mb-5 text-center">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Ablaların Yeri" height="120" class="mb-4" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <i class="fas fa-utensils fa-5x mb-4" style="display:none;"></i>
+            <h1 class="display-4">
+                Ablaların Yeri
+            </h1>
+            <p class="lead">Ablaların Yeri'nde lezzetli yemeklerimizi keşfedin ve siparişlerinizi kolayca verin!</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user fa-3x text-primary mb-3"></i>
+                <h3 class="card-title">Müşteri Girişi</h3>
+                <p class="card-text">Telefon numaranız ve isminizle giriş yaparak menüyü görüntüleyin ve sipariş verin.</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('auth.user_login') }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Müşteri Girişi
+                    </a>
+                    <a href="{{ url_for('auth.user_register') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-user-plus me-2"></i>Kayıt Ol
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-cog fa-3x text-success mb-3"></i>
+                <h3 class="card-title">Admin Girişi</h3>
+                <p class="card-text">Email ve şifrenizle admin paneline giriş yaparak sistemi yönetin.</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('auth.admin_login') }}" class="btn btn-success">
+                        <i class="fas fa-sign-in-alt me-2"></i>Admin Girişi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h2 class="text-center mb-4">Özellikler</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-mobile-alt fa-2x text-info mb-3"></i>
+                <h5 class="card-title">Mobil Uyumlu</h5>
+                <p class="card-text">Tüm cihazlarda mükemmel görünüm</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-credit-card fa-2x text-warning mb-3"></i>
+                <h5 class="card-title">Güvenli Ödeme</h5>
+                <p class="card-text">Güvenli ödeme seçenekleri</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-file-pdf fa-2x text-danger mb-3"></i>
+                <h5 class="card-title">PDF Fatura</h5>
+                <p class="card-text">Otomatik fatura oluşturma</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-sms fa-2x text-success mb-3"></i>
+                <h5 class="card-title">SMS Bildirim</h5>
+                <p class="card-text">Sipariş ve fatura bildirimleri</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
