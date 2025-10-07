@@ -1,0 +1,21 @@
+# Flask Configuration
+SECRET_KEY=your-secret-key-here
+FLASK_ENV=development
+FLASK_DEBUG=True
+
+# Database Configuration
+DATABASE_URL=sqlite:///restaurant.db
+
+# Email Configuration (for SMS/PDF sending)
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=True
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+
+# SMS API Configuration
+SMS_API_KEY=your-sms-api-key
+SMS_API_URL=https://api.sms-service.com/send
+
+# Optional: Redis for caching
+REDIS_URL=redis://localhost:6379/0
