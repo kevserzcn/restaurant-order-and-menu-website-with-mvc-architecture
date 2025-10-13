@@ -1,0 +1,146 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Sipariş Yönetimi - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-list me-2"></i>Sipariş Yönetimi</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if orders %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Müşteri</th>
+                                <th>Masa</th>
+                                <th>Ürün Sayısı</th>
+                                <th>Tutar</th>
+                                <th>Durum</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="fw-bold">#{{ order.id }}</td>
+                                <td>
+                                    {% if order.customer %}
+                                        <i class="fas fa-user me-1"></i>{{ order.customer.name }}
+                                        <br><small class="text-muted">{{ order.customer.email }}</small>
+                                    {% else %}
+                                        <span class="text-muted">Bilinmiyor</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if order.table %}
+                                        <i class="fas fa-table me-1"></i>{{ order.table.table_number }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ order.total_items() }}</span>
+                                </td>
+                                <td class="fw-bold">{{ "%.2f"|format(order.total_amount) }} ₺</td>
+                                <td>
+                                    {% if order.status == 'pending' %}
+                                        <span class="badge bg-warning">Beklemede</span>
+                                    {% elif order.status == 'completed' %}
+                                        <span class="badge bg-info">Hazırlanıyor</span>
+                                    {% elif order.status == 'paid' %}
+                                        <span class="badge bg-success">Ödendi</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ order.created_at|datetime_tr }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-primary btn-sm view-order-btn" data-order-id="{{ order.id }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if order.status == 'pending' %}
+                                        <button class="btn btn-outline-success btn-sm update-status-btn" data-order-id="{{ order.id }}" data-status="completed">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        {% elif order.status == 'completed' %}
+                                        <button class="btn btn-outline-info btn-sm update-status-btn" data-order-id="{{ order.id }}" data-status="paid">
+                                            <i class="fas fa-credit-card"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-list fa-5x text-muted mb-4"></i>
+                    <h3>Henüz Sipariş Yok</h3>
+                    <p class="text-muted">Müşteriler sipariş verdiğinde burada görünecek.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.view-order-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const orderId = this.dataset.orderId;
+            viewOrder(orderId);
+        });
+    });
+
+    document.querySelectorAll('.update-status-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const orderId = this.dataset.orderId;
+            const status = this.dataset.status;
+            updateOrderStatus(orderId, status);
+        });
+    });
+});
+
+function viewOrder(orderId) {
+    // Sipariş detaylarını modal olarak göster
+    // Bu fonksiyon geliştirilebilir
+    alert('Sipariş detayları: #' + orderId);
+}
+
+function updateOrderStatus(orderId, status) {
+    if (confirm('Sipariş durumunu güncellemek istediğinizden emin misiniz?')) {
+        // AJAX ile sipariş durumunu güncelle
+        $.ajax({
+            url: '/api/order/' + orderId + '/status',
+            method: 'POST',
+            data: { status: status },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Hata: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Bir hata oluştu!');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

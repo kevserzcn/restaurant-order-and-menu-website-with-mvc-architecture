@@ -1,0 +1,170 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Ödeme Yönetimi - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-credit-card me-2"></i>Ödeme Yönetimi</h2>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0">Tüm Ödemeler</h5>
+            </div>
+            <div class="card-body">
+                {% if payments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Sipariş ID</th>
+                                <th>Tutar</th>
+                                <th>Ödeme Yöntemi</th>
+                                <th>Durum</th>
+                                <th>İşlem ID</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in payments %}
+                            <tr>
+                                <td>{{ payment.id }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin.table_details', table_id=payment.order.table_id) if payment.order.table_id else '#' }}" class="text-decoration-none">
+                                        #{{ payment.order_id }}
+                                    </a>
+                                </td>
+                                <td class="fw-bold">{{ "%.2f"|format(payment.amount) }} ₺</td>
+                                <td>
+                                    <span class="badge {% if payment.payment_method == 'cash' %}bg-success{% elif payment.payment_method == 'card' %}bg-primary{% else %}bg-info{% endif %}">
+                                        {% if payment.payment_method == 'cash' %}
+                                            <i class="fas fa-money-bill-wave me-1"></i>Nakit
+                                        {% elif payment.payment_method == 'card' %}
+                                            <i class="fas fa-credit-card me-1"></i>Kart
+                                        {% else %}
+                                            <i class="fas fa-mobile-alt me-1"></i>Mobil
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if payment.status == 'completed' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {% if payment.status == 'completed' %}
+                                            <i class="fas fa-check-circle me-1"></i>Tamamlandı
+                                        {% elif payment.status == 'pending' %}
+                                            <i class="fas fa-clock me-1"></i>Bekliyor
+                                        {% else %}
+                                            <i class="fas fa-times-circle me-1"></i>Başarısız
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ payment.transaction_id or '-' }}</small>
+                                </td>
+                                <td>
+                                    <small>{{ payment.created_at|datetime_tr }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        {% if payment.order.table_id %}
+                                        <a href="{{ url_for('admin.table_details', table_id=payment.order.table_id) }}" class="btn btn-outline-primary btn-sm" title="Masa Detayı">
+                                            <i class="fas fa-table"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if payment.status == 'completed' and payment.order.status == 'paid' %}
+                                        <form method="POST" action="{{ url_for('admin.send_invoice', order_id=payment.order_id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-info btn-sm" title="Fatura Gönder" onclick="return confirm('Fatura e-mail gönderilsin mi?')">
+                                                <i class="fas fa-sms"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-credit-card fa-5x text-muted mb-4"></i>
+                    <h3>Henüz Ödeme Yok</h3>
+                    <p class="text-muted">Henüz hiç ödeme işlemi gerçekleşmemiş.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ödeme İstatistikleri -->
+<div class="row mt-4">
+    <div class="col-md-3 mb-3">
+        <div class="admin-stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ payments|selectattr('status', 'equalto', 'completed')|list|length }}</h4>
+                    <p class="mb-0">Tamamlanan Ödeme</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-check-circle stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="admin-stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ "%.2f"|format(payments|selectattr('status', 'equalto', 'completed')|sum(attribute='amount')) }} ₺</h4>
+                    <p class="mb-0">Toplam Gelir</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-money-bill-wave stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="admin-stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ payments|selectattr('payment_method', 'equalto', 'cash')|list|length }}</h4>
+                    <p class="mb-0">Nakit Ödeme</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-coins stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="admin-stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ payments|selectattr('payment_method', 'equalto', 'card')|list|length }}</h4>
+                    <p class="mb-0">Kart Ödeme</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-credit-card stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

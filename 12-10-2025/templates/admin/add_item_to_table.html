@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Masaya Ürün Ekle - {{ table.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-plus me-2"></i>Masaya Ürün Ekle - Masa {{ table.name }}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Ürün Seçimi</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.product_id.label(class="form-label") }}
+                        {{ form.product_id(class="form-select" + (" is-invalid" if form.product_id.errors else "")) }}
+                        {% if form.product_id.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.product_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Masaya eklemek istediğiniz ürünü seçiniz</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.quantity.label(class="form-label") }}
+                        {{ form.quantity(class="form-control" + (" is-invalid" if form.quantity.errors else "")) }}
+                        {% if form.quantity.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.quantity.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Ürün miktarını giriniz (1-10 arası)</div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('admin.table_details', table_id=table.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Masa Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Masa Adı:</span>
+                    <span class="fw-bold">{{ table.name }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Kapasite:</span>
+                    <span><i class="fas fa-users me-1"></i>{{ table.capacity }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Garson:</span>
+                    <span>
+                        {% if table.waiter_name %}
+                            <i class="fas fa-user me-1"></i>{{ table.waiter_name }}
+                        {% else %}
+                            <span class="text-muted">Atanmamış</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Durum:</span>
+                    <span>
+                        {% if table.is_occupied %}
+                            <span class="badge bg-danger">Dolu</span>
+                        {% else %}
+                            <span class="badge bg-success">Boş</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Mevcut Hesap:</span>
+                    <span class="fw-bold text-primary">{{ "%.2f"|format(table.get_total_amount()) }} ₺</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Garson Girişi</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Bu özellik müşteri siparişini garsonla vermek istediğinde kullanılır. Garson admin panelinden ilgili masaya ürün ekleyebilir.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
