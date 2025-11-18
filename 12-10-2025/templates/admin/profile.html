@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Profil - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-user-cog me-2"></i>Profilim</h2>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0">Hesap Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Ad Soyad</label>
+                        <input type="text" class="form-control" name="name" value="{{ admin_user.name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">E-posta</label>
+                        <input type="email" class="form-control" name="email" value="{{ admin_user.email }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </form>
+                <div class="mb-3">
+                    <label class="form-label">Kullanıcı ID</label>
+                    <input type="text" class="form-control" value="{{ admin_user.id }}" disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
