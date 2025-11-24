@@ -1,0 +1,330 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Ürün Düzenle - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #fdf6ef;
+    }
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 2rem 0 2.5rem 0;
+    }
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 0;
+        text-align: left;
+    }
+    .page-title i {
+        color: #ff6600;
+        margin-right: 0.5rem;
+    }
+    .form-card {
+        background: #fff;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .form-card-header {
+        background: #ff6600;
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 700;
+        padding: 0.9rem 1.5rem;
+    }
+    .form-card-body {
+        padding: 2rem 1.8rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+    .form-control, .form-select {
+        border-radius: 0.75rem;
+        border: 2px solid #e0e0e0;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #ff6600;
+        box-shadow: 0 0 0 0.2rem rgba(255, 102, 0, 0.15);
+    }
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: #dc3545;
+    }
+    .form-text {
+        color: #888;
+        font-size: 0.85rem;
+        margin-top: 0.4rem;
+    }
+    .invalid-feedback {
+        font-size: 0.85rem;
+        margin-top: 0.4rem;
+    }
+    .btn-primary {
+        background: #ff6600 !important;
+        border: none !important;
+        border-radius: 0.75rem;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.2s;
+        color: #fff !important;
+    }
+    .btn-primary:hover {
+        background: #e55a00 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+        color: #fff !important;
+    }
+    .btn-back-top {
+        background: #fff;
+        border: 2px solid #ff6600;
+        border-radius: 0.75rem;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: #ff6600;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-back-top:hover {
+        background: #ff6600;
+        color: #fff;
+    }
+    .info-card {
+        background: #fff;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+        overflow: hidden;
+    }
+    .info-card-header {
+        background: linear-gradient(135deg, #ff6600 0%, #ff8c1a 100%);
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 700;
+        padding: 0.9rem 1.5rem;
+    }
+    .info-card-body {
+        padding: 1.5rem;
+    }
+    .info-card h6 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 0.5rem;
+    }
+    .info-card .product-image {
+        border-radius: 1rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        display: block;
+    }
+    .info-card .no-image {
+        background: #f5f5f5;
+        border-radius: 1rem;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #555;
+    }
+    .info-value {
+        color: #333;
+        font-weight: 500;
+    }
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        .form-card-body {
+            padding: 1.5rem 1.2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title"><i class="fas fa-edit"></i>Ürün Düzenle</h1>
+    <a href="{{ url_for('admin.products') }}" class="btn-back-top">
+        <i class="fas fa-arrow-left me-2"></i>Geri Dön
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="form-card">
+            <div class="form-card-header">
+                Ürün Bilgileri
+            </div>
+            <div class="form-card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows="3") }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                {{ form.price.label(class="form-label") }}
+                                {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else ""), placeholder="0.00") }}
+                                {% if form.price.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.price.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                {{ form.category.label(class="form-label") }}
+                                {{ form.category(class="form-select" + (" is-invalid" if form.category.errors else "")) }}
+                                {% if form.category.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.category.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            {{ form.is_available(class="form-check-input", style="width: 3em; height: 1.5em; cursor: pointer;") }}
+                            {{ form.is_available.label(class="form-check-label", style="font-weight: 600; color: #333; cursor: pointer; margin-left: 0.5rem;") }}
+                        </div>
+                        <div class="form-text">Ürünün satışa müsait olup olmadığını belirtin</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.image_file.label(class="form-label") }}
+                        {{ form.image_file(class="form-control" + (" is-invalid" if form.image_file.errors else "")) }}
+                        {% if form.image_file.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.image_file.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Yeni resim yüklemek için seçin (PNG, JPG, JPEG, GIF, WEBP)</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.image_url.label(class="form-label") }}
+                        {{ form.image_url(class="form-control" + (" is-invalid" if form.image_url.errors else ""), placeholder="https://example.com/image.jpg") }}
+                        {% if form.image_url.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.image_url.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Veya resim URL'si girebilirsiniz (opsiyonel)</div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="info-card">
+            <div class="info-card-header">
+                Mevcut Ürün
+            </div>
+            <div class="info-card-body">
+                {% if product.image_url %}
+                    {% if product.image_url.startswith('http') %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/' + product.image_url.replace('/static/images/', '')) }}" alt="{{ product.name }}" class="product-image">
+                    {% endif %}
+                {% else %}
+                    <div class="no-image">
+                        <i class="fas fa-utensils fa-3x text-muted"></i>
+                    </div>
+                {% endif %}
+                
+                <h6>{{ product.name }}</h6>
+                <p class="text-muted small mb-3">{{ product.description }}</p>
+                
+                <div class="info-row">
+                    <span class="info-label">Fiyat:</span>
+                    <span class="info-value fw-bold text-primary">{{ product.price }} ₺</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Kategori:</span>
+                    <span class="info-value">
+                        <span class="badge bg-{% if product.category == 'yemek' %}primary{% elif product.category == 'tatlı' %}warning{% elif product.category == 'içecek' %}info{% else %}success{% endif %}">
+                            {{ product.category|title }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

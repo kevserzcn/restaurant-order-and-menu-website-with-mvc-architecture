@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - ./static/invoices:/app/static/invoices
+      - ./instance:/app/instance
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - DATABASE_URL=sqlite:////app/instance/restaurant.db
+    restart: unless-stopped
