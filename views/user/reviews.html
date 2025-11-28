@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Yorumlar - Ablaların Yeri{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #f8f9fa;
+    }
+    nav.navbar {
+        background: rgba(255,255,255,0.97) !important;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+    nav.navbar .navbar-brand,
+    nav.navbar .nav-link {
+        color: #000 !important;
+    }
+    nav.navbar .nav-link:hover {
+        color: #ff6600 !important;
+    }
+    .reviews-header {
+        background: #fff7f0;
+        border-radius: 18px;
+        box-shadow: 4px 12px 32px rgba(0,0,0,0.13);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .reviews-header h1 {
+        color: #ff8000;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    .avg-rating {
+        font-size: 3rem;
+        color: #ffd700;
+        font-weight: bold;
+    }
+    .review-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #ff6600;
+    }
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+    .review-author {
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    .review-date {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    .review-type {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .review-type.request {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+    .review-type.complaint {
+        background: #ffebee;
+        color: #c62828;
+    }
+    .review-type.comment {
+        background: #f1f8e9;
+        color: #558b2f;
+    }
+    .review-rating {
+        color: #ffd700;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    .review-message {
+        color: #555;
+        line-height: 1.6;
+        margin-top: 0.5rem;
+    }
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .stats-card h5 {
+        color: #ff8000;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .rating-bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .rating-bar-label {
+        width: 80px;
+        font-size: 0.9rem;
+    }
+    .rating-bar-fill {
+        flex: 1;
+        height: 20px;
+        background: #e0e0e0;
+        border-radius: 10px;
+        margin: 0 1rem;
+        overflow: hidden;
+    }
+    .rating-bar-progress {
+        height: 100%;
+        background: #ffd700;
+        transition: width 0.3s;
+    }
+    .review-form-card {
+        background: #fff7f0;
+        border-radius: 18px;
+        box-shadow: 4px 12px 32px rgba(0,0,0,0.13);
+        border: none;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .review-form-card h3 {
+        color: #ff8000;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+    .form-control:focus {
+        border-color: #ff6600;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+    }
+    .btn-submit {
+        background: #ff6600;
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .btn-submit:hover {
+        background: #e55a00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+    }
+    .rating-stars {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+    }
+    .rating-stars input[type="radio"] {
+        display: none;
+    }
+    .rating-stars label {
+        font-size: 2.5rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+    }
+    .rating-stars label:hover,
+    .rating-stars label:hover ~ label {
+        color: #ffd700;
+    }
+    .rating-stars label.filled {
+        color: #ffd700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <h5><i class="fas fa-chart-bar me-2"></i>İstatistikler</h5>
+            <div class="text-center mb-3">
+                <div class="avg-rating">{{ avg_rating }}</div>
+                <div class="text-muted">Ortalama Puan</div>
+                <div class="mt-2">
+                    {% for i in range(5, 0, -1) %}
+                        <span style="color: {% if i <= avg_rating|int %} #ffd700 {% else %} #ddd {% endif %};">⭐</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr>
+            <div class="mt-3">
+                <strong>{{ total_reviews }}</strong> toplam yorum
+            </div>
+            <div class="mt-2">
+                {% for i in range(5, 0, -1) %}
+                <div class="rating-bar">
+                    <span class="rating-bar-label">{{ i }} ⭐</span>
+                    <div class="rating-bar-fill">
+                        <div class="rating-bar-progress" style="width: {% if total_reviews > 0 %}{{ (rating_counts[i] / total_reviews * 100)|round }}%{% else %}0%{% endif %}"></div>
+                    </div>
+                    <span class="text-muted" style="font-size: 0.85rem;">{{ rating_counts[i] }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="col-md-9">
+        <div class="reviews-header">
+            <h1><i class="fas fa-comments me-2"></i>Müşteri Yorumları</h1>
+            <p class="text-muted">Deneyimlerinizi paylaşın ve diğer müşterilerimizin yorumlarını okuyun</p>
+        </div>
+        
+        <!-- Yorum Yap Formu -->
+        <div class="review-form-card">
+            <h3><i class="fas fa-edit me-2"></i>Yorum Yap</h3>
+            <form method="POST" id="reviewForm">
+                {{ form.hidden_tag() }}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Puan (Opsiyonel)</label>
+                    <div class="rating-stars">
+                        {% for i in range(5, 0, -1) %}
+                        <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}">
+                        <label for="star{{ i }}" title="{{ i }} yıldız" data-value="{{ i }}">☆</label>
+                        {% endfor %}
+                    </div>
+                    <small class="text-muted">Restoranımızı 1-5 yıldız arasında puanlayabilirsiniz</small>
+                </div>
+                
+                <div class="mb-4">
+                    {{ form.message.label(class="form-label") }}
+                    {{ form.message(class="form-control" + (" is-invalid" if form.message.errors else ""), rows="4") }}
+                    {% if form.message.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.message.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-submit">
+                        <i class="fas fa-paper-plane me-2"></i>Yorum Yap
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        {% if contacts %}
+            {% for contact in contacts %}
+            <div class="review-card">
+                <div class="review-header">
+                    <div>
+                        <div class="review-author">
+                            {% if contact.name|length > 0 %}
+                                {{ contact.name[0] }}{% for i in range(contact.name|length - 1) %}*{% endfor %}
+                            {% else %}
+                                {{ contact.name }}
+                            {% endif %}
+                        </div>
+                        <div class="review-date">{{ contact.created_at|datetime_tr }}</div>
+                    </div>
+                    <span class="review-type {{ contact.type }}">{{ contact.get_type_display() }}</span>
+                </div>
+                {% if contact.rating %}
+                <div class="review-rating">
+                    {% for i in range(contact.rating) %}
+                        ⭐
+                    {% endfor %}
+                    {% for i in range(5 - contact.rating) %}
+                        <span style="color: #ddd;">⭐</span>
+                    {% endfor %}
+                    <span class="text-muted ms-2">({{ contact.rating }}/5)</span>
+                </div>
+                {% endif %}
+                <div class="review-message">{{ contact.message }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                <h4>Henüz yorum yok</h4>
+                <p class="text-muted">İlk yorumu siz yapın!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Yıldız seçimi için JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.rating-stars input[type="radio"]');
+    const labels = document.querySelectorAll('.rating-stars label');
+    const starsContainer = document.querySelector('.rating-stars');
+    
+    // Yıldızları güncelle
+    function updateStars(selectedValue) {
+        labels.forEach((label, index) => {
+            const labelValue = 5 - index; // 5, 4, 3, 2, 1
+            if (selectedValue && labelValue <= selectedValue) {
+                label.classList.add('filled');
+                label.textContent = '⭐';
+                label.style.color = '#ffd700';
+            } else {
+                label.classList.remove('filled');
+                label.textContent = '☆';
+                label.style.color = '#ddd';
+            }
+        });
+    }
+    
+    // Radio button değiştiğinde
+    stars.forEach((star) => {
+        star.addEventListener('change', function() {
+            const value = parseInt(this.value);
+            updateStars(value);
+        });
+        
+        // Label'a tıklandığında radio'yu seç
+        const label = document.querySelector(`label[for="${star.id}"]`);
+        if (label) {
+            label.addEventListener('click', function(e) {
+                e.preventDefault();
+                star.checked = true;
+                star.dispatchEvent(new Event('change'));
+            });
+        }
+    });
+    
+    // Hover efekti
+    labels.forEach((label, index) => {
+        label.addEventListener('mouseenter', function() {
+            const value = 5 - index;
+            labels.forEach((l, i) => {
+                const labelValue = 5 - i;
+                if (labelValue <= value) {
+                    l.textContent = '⭐';
+                    l.style.color = '#ffd700';
+                } else {
+                    l.textContent = '☆';
+                    l.style.color = '#ddd';
+                }
+            });
+        });
+    });
+    
+    // Mouse leave - seçili değere geri dön
+    if (starsContainer) {
+        starsContainer.addEventListener('mouseleave', function() {
+            const checked = document.querySelector('.rating-stars input[type="radio"]:checked');
+            if (checked) {
+                updateStars(parseInt(checked.value));
+            } else {
+                updateStars(null);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+
