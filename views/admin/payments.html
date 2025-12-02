@@ -1,0 +1,424 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Ödeme Yönetimi - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #fff !important;
+    }
+    
+    h2 {
+        color: #ff8000 !important;
+        font-weight: 700 !important;
+    }
+    
+    .admin-card {
+        background: #fff7f0 !important;
+        border-radius: 18px;
+        box-shadow: 4px 12px 32px rgba(0,0,0,0.1);
+        border: none;
+        margin-bottom: 24px;
+    }
+    
+    .admin-card .card-header {
+        background: #ffe5cc !important;
+        border-radius: 18px 18px 0 0;
+        border-bottom: none;
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .admin-card .card-header h5 {
+        color: #ff8000 !important;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .admin-card .card-header.bg-warning {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffe5b5 100%) !important;
+    }
+    
+    .admin-card .card-header.bg-warning h5 {
+        color: #e67700 !important;
+    }
+    
+    .admin-card .table {
+        margin-bottom: 0;
+    }
+    
+    .admin-card .table thead th {
+        color: #8a5b2c !important;
+        background-color: #fff !important;
+        font-weight: 600;
+        border-bottom: 2px solid #ffe5cc;
+        padding: 1rem;
+    }
+    
+    .admin-card .table tbody td {
+        color: #2c3e50 !important;
+        vertical-align: middle;
+        padding: 1rem;
+        background: #fff !important;
+    }
+    
+    .admin-card .table tbody tr:hover td {
+        background: #fff7f0 !important;
+    }
+    
+    .btn-success {
+        background: #28a745 !important;
+        border-color: #28a745 !important;
+    }
+    
+    .btn-success:hover {
+        background: #218838 !important;
+        border-color: #1e7e34 !important;
+    }
+    
+    .btn-outline-primary {
+        color: #003087 !important;
+        border-color: #003087 !important;
+    }
+    
+    .btn-outline-primary:hover {
+        background: #003087 !important;
+        color: white !important;
+    }
+    
+    .btn-outline-secondary {
+        color: #ff8000 !important;
+        border-color: #ff8000 !important;
+        background: transparent !important;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #ff8000 !important;
+        color: white !important;
+    }
+    
+    .btn-outline-secondary i,
+    .btn-outline-secondary:not(:hover) {
+        color: #ff8000 !important;
+    }
+    
+    .btn-outline-info {
+        color: #17a2b8 !important;
+        border-color: #17a2b8 !important;
+    }
+    
+    .btn-outline-info:hover {
+        background: #17a2b8 !important;
+        color: white !important;
+    }
+    
+    .badge.bg-info {
+        background: #003087 !important;
+    }
+    
+    .badge.bg-success {
+        background: #28a745 !important;
+    }
+    
+    .badge.bg-primary {
+        background: #ff8000 !important;
+    }
+    
+    .badge.bg-warning {
+        background: #ffc107 !important;
+        color: #000 !important;
+    }
+    
+    .admin-stats-card {
+        background: linear-gradient(135deg, #fff7f0 0%, #ffe5cc 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(255, 128, 0, 0.15);
+        transition: all 0.3s;
+    }
+    
+    .admin-stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(255, 128, 0, 0.25);
+    }
+    
+    .admin-stats-card h4 {
+        color: #ff8000 !important;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .admin-stats-card p {
+        color: #8a5b2c !important;
+        margin: 0;
+        font-weight: 500;
+    }
+    
+    .stats-icon {
+        font-size: 3rem;
+        opacity: 0.3;
+    }
+    
+    .stats-icon.text-warning {
+        color: #ff8000 !important;
+    }
+    
+    .text-center i.fa-check-circle,
+    .text-center i.fa-credit-card {
+        color: #ff8000 !important;
+        opacity: 0.3;
+    }
+    
+    .text-center h3,
+    .text-center h5 {
+        color: #ff8000 !important;
+        font-weight: 600;
+    }
+    
+    .text-muted {
+        color: #8a5b2c !important;
+    }
+    
+    .table tbody tr {
+        transition: all 0.3s;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-credit-card me-2"></i>Ödeme Yönetimi</h2>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Ödeme Bekleyen Siparişler</h5>
+            </div>
+            <div class="card-body">
+                {% if pending_payments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sipariş ID</th>
+                                <th>Müşteri</th>
+                                <th>Masa</th>
+                                <th>Tutar</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in pending_payments %}
+                            <tr>
+                                <td class="fw-bold">#{{ order.id }}</td>
+                                <td>{{ order.user.name if order.user else 'N/A' }}</td>
+                                <td>
+                                    {% if order.table %}
+                                    <a href="{{ url_for('admin.table_details', table_id=order.table_id) }}" class="text-decoration-none">
+                                        <span class="badge bg-info">{{ order.table.name }}</span>
+                                    </a>
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold text-danger">{{ "%.2f"|format(order.total_amount) }} ₺</td>
+                                <td>
+                                    <small>{{ order.updated_at|datetime_tr }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('admin.complete_payment', order_id=order.id) }}" class="btn btn-success btn-sm" title="Ödemeyi Tamamla">
+                                            <i class="fas fa-check me-1"></i>Ödeme Al
+                                        </a>
+                                        {% if order.table_id %}
+                                        <a href="{{ url_for('admin.table_details', table_id=order.table_id) }}" class="btn btn-outline-primary btn-sm" title="Masa Detayı">
+                                            <i class="fas fa-table"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                    <h5>Ödeme Bekleyen Sipariş Yok</h5>
+                    <p class="text-muted">Tüm ödemeler tamamlanmış.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Tamamlanan Ödemeler</h5>
+            </div>
+            <div class="card-body">
+                {% if completed_payments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Sipariş ID</th>
+                                <th>Müşteri</th>
+                                <th>Tutar</th>
+                                <th>Ödeme Yöntemi</th>
+                                <th>Durum</th>
+                                <th>İşlem ID</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in completed_payments %}
+                            <tr>
+                                <td>{{ payment.id }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin.table_details', table_id=payment.order.table_id) if payment.order.table_id else '#' }}" class="text-decoration-none">
+                                        #{{ payment.order_id }}
+                                    </a>
+                                </td>
+                                <td>{{ payment.order.user.name if payment.order and payment.order.user else 'N/A' }}</td>
+                                <td class="fw-bold">{{ "%.2f"|format(payment.amount) }} ₺</td>
+                                <td>
+                                    <span class="badge {% if payment.payment_method == 'cash' %}bg-success{% elif payment.payment_method == 'card' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                        {% if payment.payment_method == 'cash' %}
+                                            <i class="fas fa-money-bill-wave me-1"></i>Nakit
+                                        {% elif payment.payment_method == 'card' %}
+                                            <i class="fas fa-credit-card me-1"></i>Kart
+                                        {% else %}
+                                            <i class="fas fa-question me-1"></i>{{ payment.payment_method|title }}
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if payment.status == 'completed' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {% if payment.status == 'completed' %}
+                                            <i class="fas fa-check-circle me-1"></i>Tamamlandı
+                                        {% elif payment.status == 'pending' %}
+                                            <i class="fas fa-clock me-1"></i>Bekliyor
+                                        {% else %}
+                                            <i class="fas fa-times-circle me-1"></i>Başarısız
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ payment.transaction_id or '-' }}</small>
+                                </td>
+                                <td>
+                                    <small>{{ payment.created_at|datetime_tr }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        {% if payment.order.table_id %}
+                                        <a href="{{ url_for('admin.table_details', table_id=payment.order.table_id) }}" class="btn btn-outline-primary btn-sm" title="Masa Detayı">
+                                            <i class="fas fa-table"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if payment.status == 'completed' and payment.order.status == 'paid' %}
+                                        <form method="POST" action="{{ url_for('admin.send_invoice', order_id=payment.order_id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-info btn-sm" title="Fatura Gönder">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-credit-card fa-5x text-muted mb-4"></i>
+                    <h3>Henüz Tamamlanan Ödeme Yok</h3>
+                    <p class="text-muted">Henüz hiç ödeme işlemi gerçekleşmemiş.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mt-4">
+    <div class="col-md-3 mb-3">
+        <div class="admin-stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ pending_payments|length }}</h4>
+                    <p class="mb-0">Bekleyen Ödeme</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-clock stats-icon text-warning"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="admin-stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ completed_payments|selectattr('status', 'equalto', 'completed')|list|length }}</h4>
+                    <p class="mb-0">Tamamlanan Ödeme</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-check-circle stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="admin-stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ "%.2f"|format(completed_payments|selectattr('status', 'equalto', 'completed')|sum(attribute='amount')) }} ₺</h4>
+                    <p class="mb-0">Toplam Gelir</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-money-bill-wave stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="admin-stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ completed_payments|selectattr('payment_method', 'equalto', 'cash')|list|length }}</h4>
+                    <p class="mb-0">Nakit Ödeme</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-coins stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

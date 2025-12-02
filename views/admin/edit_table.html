@@ -1,0 +1,272 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Masa Düzenle - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #fdf6ef;
+    }
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 2rem 0 2.5rem 0;
+    }
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 0;
+        text-align: left;
+    }
+    .page-title i {
+        color: #ff6600;
+        margin-right: 0.5rem;
+    }
+    .form-card {
+        background: #fff;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .form-card-header {
+        background: #ff6600;
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 700;
+        padding: 0.9rem 1.5rem;
+    }
+    .form-card-body {
+        padding: 2rem 1.8rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+    .form-control {
+        border-radius: 0.75rem;
+        border: 2px solid #e0e0e0;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    .form-control:focus {
+        border-color: #ff6600;
+        box-shadow: 0 0 0 0.2rem rgba(255, 102, 0, 0.15);
+    }
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+    .form-text {
+        color: #888;
+        font-size: 0.85rem;
+        margin-top: 0.4rem;
+    }
+    .invalid-feedback {
+        font-size: 0.85rem;
+        margin-top: 0.4rem;
+    }
+    .btn-primary {
+        background: #ff6600 !important;
+        border: none !important;
+        border-radius: 0.75rem;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.2s;
+        color: #fff !important;
+    }
+    .btn-primary:hover {
+        background: #e55a00 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+        color: #fff !important;
+    }
+    .btn-outline-secondary {
+        border: 2px solid #ddd;
+        border-radius: 0.75rem;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        color: #666;
+        background: #fff;
+        transition: all 0.2s;
+    }
+    .btn-outline-secondary:hover {
+        background: #f5f5f5;
+        border-color: #ccc;
+        color: #333;
+    }
+    .btn-back-top {
+        background: #fff;
+        border: 2px solid #ff6600;
+        border-radius: 0.75rem;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: #ff6600;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-back-top:hover {
+        background: #ff6600;
+        color: #fff;
+    }
+    .info-card {
+        background: #fff;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+        overflow: hidden;
+    }
+    .info-card-header {
+        background: linear-gradient(135deg, #ff6600 0%, #ff8c1a 100%);
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 700;
+        padding: 0.9rem 1.5rem;
+    }
+    .info-card-body {
+        padding: 1.5rem;
+    }
+    .info-card h6 {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #ff6600;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #555;
+    }
+    .info-value {
+        color: #333;
+        font-weight: 500;
+    }
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .badge.bg-success {
+        background: #28a745 !important;
+    }
+    .badge.bg-danger {
+        background: #dc3545 !important;
+    }
+    .text-primary {
+        color: #ff6600 !important;
+    }
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        .form-card-body {
+            padding: 1.5rem 1.2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title"><i class="fas fa-edit"></i>Masa Düzenle</h1>
+    <a href="{{ url_for('admin.tables') }}" class="btn-back-top">
+        <i class="fas fa-arrow-left me-2"></i>Geri Dön
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="form-card">
+            <div class="form-card-header">
+                Masa Bilgileri
+            </div>
+            <div class="form-card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Masa adını giriniz (örn: "Müzehher", "Küçük Prens")</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.capacity.label(class="form-label") }}
+                        {{ form.capacity(class="form-control" + (" is-invalid" if form.capacity.errors else "")) }}
+                        {% if form.capacity.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.capacity.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Masa kapasitesini giriniz (1-20 arası)</div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="info-card">
+            <div class="info-card-header">
+                Mevcut Masa
+            </div>
+            <div class="info-card-body">
+                <h6>{{ table.name }}</h6>
+                
+                <div class="info-row">
+                    <span class="info-label">Kapasite:</span>
+                    <span class="info-value"><i class="fas fa-users me-1"></i>{{ table.capacity }} Kişi</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Durum:</span>
+                    <span class="info-value">
+                        {% if table.is_occupied %}
+                            <span class="badge bg-danger">Dolu</span>
+                        {% else %}
+                            <span class="badge bg-success">Boş</span>
+                        {% endif %}
+                    </span>
+                </div>
+                
+                {% if table.is_occupied %}
+                <div class="info-row">
+                    <span class="info-label">Hesap Tutarı:</span>
+                    <span class="info-value fw-bold text-primary">{{ "%.2f"|format(table.get_total_amount()) }} ₺</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

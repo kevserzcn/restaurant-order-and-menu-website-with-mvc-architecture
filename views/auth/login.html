@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Giriş - Restoran Menü Sistemi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-corner-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    
+    .admin-corner-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .admin-corner-btn i {
+        font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+        .admin-corner-btn {
+            top: 15px;
+            right: 15px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+        }
+        
+        .admin-corner-btn span {
+            display: none;
+        }
+        
+        .admin-corner-btn i {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('auth.admin_login') }}" class="admin-corner-btn">
+    <i class="fas fa-user-shield"></i>
+    <span>Admin</span>
+</a>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center">
+                <h3><i class="fas fa-sign-in-alt me-2"></i>Giriş Yap</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-user fa-3x text-primary mb-3"></i>
+                                <h4>Müşteri Girişi</h4>
+                                <p class="text-muted">Telefon numaranız ve isminizle giriş yapın</p>
+                                <a href="{{ url_for('auth.user_login') }}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Müşteri Girişi
+                                </a>
+                                <hr>
+                                <a href="{{ url_for('auth.user_register') }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-user-plus me-2"></i>Kayıt Ol
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Ana Sayfaya Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

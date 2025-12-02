@@ -1,0 +1,145 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Ürün Ekle - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0" style="color: #222; font-weight: bold;"><i class="fas fa-plus me-2"></i>Yeni Ürün Ekle</h2>
+            <a href="{{ url_for('admin.products') }}" class="btn" style="background: #ff6600; color: white; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 600;">
+                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Ürün Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows="3") }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.price.label(class="form-label") }}
+                                {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else ""), placeholder="0.00") }}
+                                {% if form.price.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.price.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.category.label(class="form-label") }}
+                                {{ form.category(class="form-select" + (" is-invalid" if form.category.errors else "")) }}
+                                {% if form.category.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.category.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.image_file.label(class="form-label") }}
+                        {{ form.image_file(class="form-control" + (" is-invalid" if form.image_file.errors else "")) }}
+                        {% if form.image_file.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.image_file.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text" style="color: #ccc;">Bilgisayarınızdan resim yükleyin (PNG, JPG, JPEG, GIF, WEBP)</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.image_url.label(class="form-label") }}
+                        {{ form.image_url(class="form-control" + (" is-invalid" if form.image_url.errors else ""), placeholder="https://example.com/image.jpg") }}
+                        {% if form.image_url.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.image_url.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text" style="color: #ccc;">Resim yüklemek yerine URL de girebilirsiniz (opsiyonel)</div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn" style="background: #ff6600; color: white; border-radius: 12px; padding: 0.6rem 1.5rem; font-weight: 600;">
+                            <i class="fas fa-save me-2"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Yardım</h5>
+            </div>
+            <div class="card-body">
+                <h6>Kategori Seçenekleri:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-drumstick-bite text-primary me-2"></i>Yemek</li>
+                    <li><i class="fas fa-birthday-cake text-warning me-2"></i>Tatlı</li>
+                    <li><i class="fas fa-coffee text-info me-2"></i>İçecek</li>
+                    <li><i class="fas fa-leaf text-success me-2"></i>Salata</li>
+                </ul>
+                
+                <hr>
+                
+                <h6>Fiyat Formatı:</h6>
+                <p class="text-muted" style="color: #ccc !important;">Fiyatı sayısal olarak giriniz. Örnek: 25.50</p>
+                
+                <hr>
+                
+                <h6>Ürün Resmi:</h6>
+                <p class="text-muted" style="color: #ccc !important;">Bilgisayarınızdan resim yükleyebilir veya URL girebilirsiniz. Her ikisi de opsiyoneldir.</p>
+                <p class="text-muted" style="color: #ccc !important;"><strong>Desteklenen formatlar:</strong> PNG, JPG, JPEG, GIF, WEBP</p>
+                <p class="text-muted" style="color: #ccc !important;"><strong>Maksimum boyut:</strong> 16MB</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

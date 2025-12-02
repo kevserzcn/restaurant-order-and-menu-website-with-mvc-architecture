@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+
+{% block title %}Ana Sayfa - {{ current_user.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    nav.navbar {
+        background: white !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    nav.navbar .navbar-brand,
+    nav.navbar .nav-link {
+        color: #333 !important;
+    }
+    
+    nav.navbar .nav-link:hover {
+        color: #ff6600 !important;
+    }
+    
+    main.container {
+        max-width: 1400px !important;
+        padding: 2rem 1rem !important;
+    }
+    
+    body {
+        background: #f8f9fa;
+    }
+    
+    .welcome-header {
+        background: white;
+        padding: 2.5rem 2rem;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+    }
+    
+    .welcome-header h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .welcome-header p {
+        font-size: 1.1rem;
+        color: #666;
+        margin: 0;
+    }
+    
+    .welcome-text {
+        flex: 1;
+    }
+    
+    .btn-sepet {
+        background: #ff6600;
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: all 0.3s;
+        flex-shrink: 0;
+    }
+    
+    .btn-sepet:hover {
+        background: #e55a00;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+    }
+    
+    .btn-sepet i {
+        font-size: 1.2rem;
+    }
+    
+    .active-order-alert {
+        background: #e3f2fd;
+        border: 2px solid #2196f3;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .active-order-alert h5 {
+        color: #1976d2;
+        font-weight: bold;
+        margin-bottom: 0.8rem;
+    }
+    
+    .active-order-alert p {
+        color: #666;
+        margin-bottom: 1rem;
+    }
+    
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .category-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+    
+    .category-image {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 1.5rem;
+        object-fit: contain;
+    }
+    
+    .category-card h5 {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .category-card p {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .btn-category {
+        background: #ff6600;
+        color: white;
+        border: none;
+        padding: 0.7rem 2rem;
+        border-radius: 20px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+    
+    .btn-category:hover {
+        background: #e55a00;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .bottom-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 3rem;
+    }
+    
+    .btn-primary-custom {
+        background: #003087;
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary-custom:hover {
+        background: #002266;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 48, 135, 0.3);
+    }
+    
+    @media (max-width: 992px) {
+        .welcome-header h1 {
+            font-size: 2.2rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .welcome-header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 2rem 1.5rem;
+        }
+        
+        .welcome-header h1 {
+            font-size: 2rem;
+        }
+        
+        .btn-sepet {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.9rem;
+            align-self: center;
+            margin-top: 1rem;
+        }
+        
+        .categories-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .bottom-buttons {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-primary-custom {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-header">
+    <div class="welcome-text">
+        <h1>HOŞ GELDİNİZ</h1>
+        <p>Denizden esen ferahlık, sofranızda hayat bulsun.</p>
+    </div>
+    <a href="{{ url_for('user.cart') }}" class="btn-sepet">
+        <i class="fas fa-shopping-cart"></i>
+        Sepetim
+    </a>
+</div>
+
+{% if active_order %}
+<div class="active-order-alert">
+    {% if active_order.status == 'pending' %}
+    <h5><i class="fas fa-shopping-cart me-2"></i>Aktif Siparişiniz Var</h5>
+    <p class="mb-2">Sepetinizde {{ active_order.total_items() }} ürün bulunuyor.</p>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('user.cart') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-shopping-cart me-1"></i>Ürünleri Görüntüle
+        </a>
+    </div>
+    {% elif active_order.status in ['completed', 'payment_pending'] and active_order.table %}
+    <h5><i class="fas fa-info-circle me-2"></i>Mevcut Siparişiniz</h5>
+    <p class="mb-2">{{ active_order.table.name }} masanıza verdiğiniz siparişe ürün ekleyebilirsiniz.</p>
+    <div class="d-flex gap-2">
+        {% if active_order.status == 'completed' %}
+        <a href="{{ url_for('user.checkout') }}" class="btn btn-success btn-sm">
+            <i class="fas fa-cash-register me-1"></i>Ödemeye Geç
+        </a>
+        {% endif %}
+        <a href="{{ url_for('user.menu') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle me-1"></i>Ürün Ekle
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="categories-grid">
+    <div class="category-card">
+        <img src="{{ url_for('static', filename='images/yemekler.png') }}" alt="Yemek Çeşitlerimiz" class="category-image">
+        <h5>Yemek Çeşitlerimiz</h5>
+        <p>{{ yemekler|length }} Çeşit</p>
+        <a href="{{ url_for('user.menu') }}#yemekler" class="btn-category">Görüntüle</a>
+    </div>
+    
+    <div class="category-card">
+        <img src="{{ url_for('static', filename='images/tatlilar.png') }}" alt="Tatlılarımız" class="category-image">
+        <h5>Tatlılarımız</h5>
+        <p>{{ tatlilar|length }} Çeşit</p>
+        <a href="{{ url_for('user.menu') }}#tatlilar" class="btn-category">Görüntüle</a>
+    </div>
+    
+    <div class="category-card">
+        <img src="{{ url_for('static', filename='images/icecekler.png') }}" alt="İçeceklerimiz" class="category-image">
+        <h5>İçeceklerimiz</h5>
+        <p>{{ icecekler|length }} Çeşit</p>
+        <a href="{{ url_for('user.menu') }}#icecekler" class="btn-category">Görüntüle</a>
+    </div>
+    
+    <div class="category-card">
+        <img src="{{ url_for('static', filename='images/salatalar.png') }}" alt="Salatalarımız" class="category-image">
+        <h5>Salatalarımız</h5>
+        <p>{{ salatalar|length }} Çeşit</p>
+        <a href="{{ url_for('user.menu') }}#salatalar" class="btn-category">Görüntüle</a>
+    </div>
+</div>
+
+<div class="bottom-buttons">
+    <a href="{{ url_for('user.menu') }}" class="btn-primary-custom">
+        Tüm Menüyü Görüntüle
+    </a>
+    <a href="{{ url_for('user.orders') }}" class="btn-primary-custom">
+        Sipariş Geçmişim
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('.add-to-cart-btn').click(function(e) {
+        e.preventDefault();
+        
+        const productId = $(this).data('product-id');
+        const quantity = $(this).closest('.card-body').find('input[name="quantity"]').val() || 1;
+        
+        $.ajax({
+            url: '{{ url_for("user.add_to_cart") }}',
+            method: 'POST',
+            data: {
+                product_id: productId,
+                quantity: quantity
+            },
+            success: function(response) {
+                if (response.success) {
+                    showSuccessModal(response.product_name, response.quantity);
+                    
+                    updateCartCount(response.cart_count);
+                } else {
+                    showErrorModal(response.message);
+                }
+            },
+            error: function() {
+                showErrorModal('Bir hata oluştu!');
+            }
+        });
+    });
+    
+    function showSuccessModal(productName, quantity) {
+        const modalHtml = `
+            <div class="modal fade" id="successModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-check-circle me-2"></i>Başarılı!
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <i class="fas fa-shopping-cart fa-3x text-success mb-3"></i>
+                            <h4>${productName}</h4>
+                            <p class="mb-0">${quantity} adet sepete eklendi!</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Tamam</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('#successModal').remove();
+        
+        $('body').append(modalHtml);
+        $('#successModal').modal('show');
+        
+        $('#successModal').on('hidden.bs.modal', function() {
+            $(this).remove();
+        });
+    }
+    
+    function showErrorModal(message) {
+        const modalHtml = `
+            <div class="modal fade" id="errorModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-exclamation-circle me-2"></i>Hata!
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <i class="fas fa-times-circle fa-3x text-danger mb-3"></i>
+                            <p class="mb-0">${message}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tamam</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('#errorModal').remove();
+        
+        $('body').append(modalHtml);
+        $('#errorModal').modal('show');
+        
+        $('#errorModal').on('hidden.bs.modal', function() {
+            $(this).remove();
+        });
+    }
+    
+    function updateCartCount(count) {
+        $('.cart-count').text(count);
+    }
+});
+</script>
+{% endblock %}

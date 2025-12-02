@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Müşteri Kayıt - Ablaların Yeri{% endblock %}
+
+{% block extra_css %}
+<style>
+    nav.navbar,
+    footer {
+        display: none !important;
+    }
+
+    main.container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        overflow-x: hidden;
+        background: #f0f8ff;
+    }
+
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .decor-image {
+        position: absolute;
+        z-index: 1;
+    }
+
+    .decor-zeytin {
+        top: 5%;
+        left: 18%;
+        width: 180px;
+    }
+
+    .decor-kıvrak {
+        z-index: 20;
+        top: 0%;
+        right: 23%;
+        width: 150px;
+    }
+
+    .decor-domates {
+        top: 40%;
+        right: 20%;
+        width: 160px;
+    }
+
+    .decor-ekmek {
+        bottom: 2%;
+        left: 16%;
+        width: 200px;
+    }
+
+    .decor-peynir {
+        z-index: 20;
+        bottom: 2%;
+        right: 23%;
+        width: 140px;
+    }
+
+    .login-card {
+        background: rgba(240, 248, 255, 0.95);
+        border-radius: 30px;
+        padding: 3rem 2.5rem;
+        max-width: 700px;
+        width: 100%;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .login-header i {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-header h2 {
+        color: #333;
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: #333;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background: white;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #ff6600;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+    }
+
+    .form-group input.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        background: #ff6600;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+        background: #e55a00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .login-footer p {
+        color: #666;
+        margin-bottom: 0.8rem;
+    }
+
+    .btn-link {
+        color: #ff6600;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-link:hover {
+        color: #e55a00;
+        text-decoration: underline;
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-top: 1rem;
+        color: #666;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+    }
+
+    .btn-back:hover {
+        color: #333;
+    }
+
+    @media (max-width: 768px) {
+        .decor-image {
+            width: 80px !important;
+        }
+        .login-card {
+            padding: 2rem 1.5rem;
+        }
+        .login-header h2 {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .decor-zeytin, .decor-kıvrak, .decor-peynir {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <img src="{{ url_for('static', filename='images/zeytin.png') }}" alt="Zeytin" class="decor-image decor-zeytin">
+    <img src="{{ url_for('static', filename='images/kıvrak.png') }}" alt="Kıvrak" class="decor-image decor-kıvrak">
+    <img src="{{ url_for('static', filename='images/domates.png') }}" alt="Domates" class="decor-image decor-domates">
+    <img src="{{ url_for('static', filename='images/ekmek.png') }}" alt="Ekmek" class="decor-image decor-ekmek">
+    <img src="{{ url_for('static', filename='images/peynir.png') }}" alt="Peynir" class="decor-image decor-peynir">
+
+    <div class="login-card">
+        <div class="login-header">
+            <i class="fas fa-user-plus"></i>
+            <h2>Müşteri Kayıt</h2>
+        </div>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="mail@ornek.com") }}
+                {% if form.email.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.name.label }}
+                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Adınız Soyadınız") }}
+                {% if form.name.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            {{ form.submit(class="btn-submit", value="Kayıt Ol") }}
+        </form>
+
+        <div class="login-footer">
+            <p>Zaten hesabınız var mı?</p>
+            <a href="{{ url_for('auth.user_login') }}" class="btn-link">
+                <i class="fas fa-sign-in-alt me-1"></i>Giriş Yap
+            </a>
+            <br>
+            <a href="{{ url_for('auth.index') }}" class="btn-back">
+                <i class="fas fa-arrow-left me-1"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,246 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Ödeme Tamamlama - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    h2, h3, h4, h5, h6 {
+        color: #2c3e50 !important;
+    }
+    
+    .btn-outline-secondary {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        color: #ffffff !important;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #5a6268 !important;
+        border-color: #545b62 !important;
+    }
+    
+    .btn-success {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+        color: #ffffff !important;
+    }
+    
+    .admin-card {
+        background-color: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    .admin-card .card-header {
+        color: #2c3e50 !important;
+        background-color: #e9ecef !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+    
+    .admin-card .card-body {
+        background-color: #f8f9fa !important;
+        color: #2c3e50 !important;
+    }
+    
+    .admin-card strong,
+    .admin-card span,
+    .admin-card p,
+    .admin-card label {
+        color: #2c3e50 !important;
+    }
+    
+    .table {
+        background-color: #ffffff !important;
+    }
+    
+    .table thead th {
+        color: #2c3e50 !important;
+        background-color: #e9ecef !important;
+        font-weight: 600;
+    }
+    
+    .table tbody td {
+        color: #2c3e50 !important;
+        background-color: #ffffff !important;
+    }
+    
+    .table tbody tr {
+        background-color: #ffffff !important;
+    }
+    
+    .table tfoot th {
+        color: #2c3e50 !important;
+        background-color: #e9ecef !important;
+        font-weight: 700;
+    }
+    
+    .form-label {
+        color: #2c3e50 !important;
+        font-weight: 600;
+    }
+    
+    .form-check-label {
+        color: #2c3e50 !important;
+    }
+    
+    footer {
+        background-color: #2c3e50 !important;
+        color: #ffffff !important;
+    }
+    
+    footer p {
+        color: #ffffff !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-cash-register me-2"></i>Ödeme Tamamlama</h2>
+            {% if order.table_id %}
+                <a href="{{ url_for('admin.table_details', table_id=order.table_id) }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Masaya Dön
+                </a>
+            {% else %}
+                <a href="{{ url_for('admin.orders') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Siparişlere Dön
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0">Sipariş Detayları</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Sipariş No:</strong> #{{ order.id }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Masa:</strong> {{ order.table.name if order.table else 'N/A' }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Müşteri:</strong> {{ user.name if user else 'Bilinmiyor' }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>E-posta:</strong> {{ user.email if user else 'Bilinmiyor' }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Sipariş Tarihi:</strong> {{ order.created_at|datetime_tr }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Durum:</strong> 
+                        <span class="badge bg-danger">Ödeme Bekliyor</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6>Sipariş İçeriği:</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Ürün</th>
+                                <th>Miktar</th>
+                                <th>Birim Fiyat</th>
+                                <th>Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ "%.2f"|format(item.price) }} ₺</td>
+                                <td>{{ "%.2f"|format(item.quantity * item.price) }} ₺</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-primary">
+                                <th colspan="3">TOPLAM TUTAR</th>
+                                <th class="h5">{{ "%.2f"|format(order.total_amount) }} ₺</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="admin-card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Ödeme İşlemi
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Ödeme Yöntemi</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cash" value="cash" checked>
+                            <label class="form-check-label" for="cash">
+                                <i class="fas fa-money-bill-wave me-2"></i>Nakit
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="card" value="card">
+                            <label class="form-check-label" for="card">
+                                <i class="fas fa-credit-card me-2"></i>Kredi/Banka Kartı
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Toplam Tutar:</strong> {{ "%.2f"|format(order.total_amount) }} ₺
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-check me-2"></i>Ödemeyi Tamamla
+                        </button>
+                        {% if order.table_id %}
+                            <a href="{{ url_for('admin.table_details', table_id=order.table_id) }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>İptal
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('admin.orders') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>İptal
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="admin-card mt-3">
+            <div class="card-body">
+                <h6 class="card-title">Bilgilendirme</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check-circle text-success me-2"></i>Ödeme tamamlandıktan sonra sipariş durumu "Ödendi" olarak güncellenecek</li>
+                    <li><i class="fas fa-envelope text-info me-2"></i>Müşteriye fatura e-posta ile gönderilebilir</li>
+                    <li><i class="fas fa-print text-warning me-2"></i>Hesap yazdırılabilir</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

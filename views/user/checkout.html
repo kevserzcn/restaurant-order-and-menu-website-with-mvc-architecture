@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Ödeme - {{ current_user.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body { background: #fff !important; }
+    nav.navbar { background: rgba(255,255,255,0.97) !important; box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+    nav.navbar .navbar-brand, nav.navbar .nav-link { color: #000 !important; }
+    nav.navbar .nav-link:hover { color: #ff6600 !important; }
+    .checkout-modern-card { background: #fff7f0 !important; border-radius: 18px; box-shadow: 4px 12px 32px rgba(0,0,0,0.13); border: none; margin-bottom: 32px; }
+    .checkout-modern-card .card-header { background: #ffe5cc !important; border-radius: 18px 18px 0 0; border-bottom: none; color: #000 !important; font-weight: 700; font-size: 1.3rem; padding: 24px 28px; }
+    .checkout-modern-card .btn-success { background: #ff8000 !important; border-color: #ff8000 !important; color: #fff !important; }
+    .checkout-modern-card .card-title, .checkout-modern-card .card-header h5, .checkout-modern-card .card-header h6 { color: #000 !important; font-weight: 700; margin: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card checkout-modern-card">
+            <div class="card-header">
+                <h5 class="mb-0">Sipariş Detayları</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Ürün</th>
+                                <th>Miktar</th>
+                                <th>Birim Fiyat</th>
+                                <th>Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.price }} ₺</td>
+                                <td>{{ item.quantity * item.price }} ₺</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-primary">
+                                <th colspan="3">Toplam</th>
+                                <th>{{ "%.2f"|format(total) }} ₺</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card checkout-modern-card">
+            <div class="card-header">
+                <h5 class="mb-0">Ödeme Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user.payment') }}">
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <div class="mb-3">
+                        <label class="form-label" style="color:#000;">Ödeme Yöntemi</label>
+                        <div class="form-check">
+                            <label class="form-check-label" for="cash" style="color:#000;"><i class="fas fa-money-bill-wave me-2"></i>Ödeme Yöntemi Girişi Kasada Yapılacaktır</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between">
+                            <span class="h5" style="color:#000;">Toplam Tutar:</span>
+                            <span class="h4 text-primary">{{ "%.2f"|format(total) }} ₺</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-cash-register me-2"></i>Ödemeyi Kasaya Yönlendir
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card checkout-modern-card mt-3">
+            <div class="card-body">
+                <h6 style="color:#000; font-weight:700;">Ödeme Sonrası</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i><span style="color:#000">Ödeme onayı</span></li>
+                    <li><i class="fas fa-file-pdf text-danger me-2"></i><span style="color:#000">PDF fatura oluşturma</span></li>
+                    <li><i class="fas fa-envelope text-info me-2"></i><span style="color:#000">E-posta ile fatura gönderimi</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary" style="color: #000 !important; border-color: #000 !important;">
+                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

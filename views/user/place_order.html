@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Masa Seçimi{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #ffffff !important;
+    }
+    nav.navbar {
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    }
+    nav.navbar .navbar-brand,
+    nav.navbar .nav-link {
+        color: #000 !important;
+    }
+    nav.navbar .nav-link:hover {
+        color: #ff6600 !important;
+    }
+    .order-summary-modern {
+        background: #fff7f0;
+        border-radius: 18px;
+        box-shadow: 4px 12px 32px rgba(0,0,0,0.13);
+        padding: 0 0 48px 0;
+        min-width: 540px;
+        max-width: 1100px;
+        margin-bottom: 32px;
+    }
+    .order-summary-modern-header {
+        background: #ffe5cc;
+        border-radius: 18px 18px 0 0;
+        padding: 28px 48px;
+        text-align: left;
+    }
+    .order-summary-modern-header span {
+        font-size: 2.3rem;
+        font-weight: bold;
+        color: #ff8000;
+        letter-spacing: -1px;
+    }
+    .order-summary-modern-table {
+        overflow-x: auto;
+        padding: 0 32px;
+    }
+    .order-summary-modern-table table {
+        width: 100%;
+        border-collapse: collapse;
+        background: transparent;
+        font-size: 1.25rem;
+    }
+    .order-summary-modern-table th {
+        color: #ff8000;
+        font-weight: 600;
+        padding: 12px 8px;
+    }
+    .order-summary-modern-table td {
+        padding: 10px 8px;
+    }
+    .order-summary-modern-table tr {
+        border-bottom: 1px solid #ffe5cc;
+    }
+    .table-select-modern {
+        background: #fff7f0 !important;
+        background-image: none !important;
+        border-radius: 18px;
+        box-shadow: 4px 12px 32px rgba(0,0,0,0.13);
+        overflow: hidden;
+    }
+    .table-select-modern.card,
+    .table-select-modern .card-body {
+        background: #fff7f0 !important;
+        background-image: none !important;
+    }
+    .table-select-modern .card-header {
+        background: #ffe5cc !important;
+        background-image: none !important;
+        border-bottom: none !important;
+        padding: 24px 28px;
+    }
+    .table-select-modern .card-header h5 {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #ff8000;
+        letter-spacing: -0.2px;
+    }
+    .table-select-modern .card-body {
+        padding: 20px 24px 28px 24px;
+    }
+    .table-select-modern .form-label {
+        font-weight: 600;
+        color: #ff8000;
+    }
+    .table-select-modern .form-control,
+    .table-select-modern .form-select {
+        border-color: #ffe5cc;
+        box-shadow: none;
+    }
+    .table-select-modern .form-control:focus,
+    .table-select-modern .form-select:focus {
+        border-color: #ff8000;
+        box-shadow: 0 0 0 0.2rem rgba(255,128,0,0.15);
+    }
+    .table-select-modern .btn-primary {
+        background: #ff6600 !important;
+        background-image: none !important;
+        border-color: #ff6600 !important;
+        color: #fff !important;
+    }
+    .table-select-modern .btn-primary:hover,
+    .table-select-modern .btn-primary:focus {
+        background-color: #e05500 !important;
+        border-color: #e05500 !important;
+        color: #fff !important;
+    }
+    .table-select-modern .alert-info {
+        background: #fff7f0;
+        border-color: #ffe5cc;
+        color: #8a5b2c;
+    }
+    .table-select-modern .alert-success {
+        background: #f6fff7;
+        border-color: #cdeccd;
+        color: #2f6b2f;
+    }
+    .info-modern .card-body,
+    .info-modern .list-unstyled li {
+        color: #8a5b2c !important;
+    }
+    .info-modern .card-title {
+        color: #ff8000 !important;
+        font-weight: 700;
+    }
+    @media (max-width: 900px) {
+        .order-summary-modern, .order-summary-modern-table {
+            min-width: 0;
+            max-width: 100%;
+            padding: 0 8px;
+        }
+        .order-summary-modern-header {
+            padding: 18px 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start; padding: 0 2rem;">
+    <div class="order-summary-modern">
+        <div class="order-summary-modern-header">
+            <span>Sipariş Özeti</span>
+        </div>
+        <div class="order-summary-modern-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ürün</th>
+                        <th>Miktar</th>
+                        <th>Birim Fiyat</th>
+                        <th>Toplam</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.price }} ₺</td>
+                        <td>{{ item.quantity * item.price }} ₺</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr style="background: #ffe5cc;">
+                        <th colspan="3">Toplam</th>
+                        <th>{{ "%.2f"|format(order.calculate_total()) }} ₺</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div style="flex: 1 1 340px; max-width: 420px; min-width: 300px;">
+        <div class="card table-select-modern" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <h5 class="mb-0">Masa Seçimi</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% if current_table %}
+                    <div class="mb-3">
+                        <label class="form-label">Masa</label>
+                        <input type="text" class="form-control" value="{{ current_table.name }} ({{ current_table.capacity }} kişi)" disabled>
+                        <input type="hidden" name="table_id" value="{{ current_table.id }}">
+                    </div>
+                    <div class="mb-3">
+                        <div class="alert alert-success">
+                            <i class="fas fa-chair me-2"></i>
+                            Şu anda {{ current_table.name }} masasındasınız. Siparişiniz bu masaya eklenecek.
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="mb-3">
+                        <label class="form-label">Masa</label>
+                        <select class="form-select" name="table_id" required>
+                            <option value="">Masa Seçin</option>
+                            {% for table in tables %}
+                            <option value="{{ table.id }}">
+                                {{ table.name }} ({{ table.capacity }} kişi)
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Lütfen oturduğunuz masa numarasını seçin.
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-check me-2"></i>Siparişi Onayla
+                        </button>
+                        <a href="{{ url_for('user.menu') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Menüye Git ve Ürün Ekle
+                        </a>
+                        <a href="{{ url_for('user.cart') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Sepete Dön
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card table-select-modern info-modern mt-3">
+            <div class="card-body">
+                <h6 class="card-title">Bilgilendirme</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-clock text-primary me-2"></i>Sipariş 10 dakika içinde hazırlanır</li>
+                    <li><i class="fas fa-utensils text-success me-2"></i>Masaya servis yapılır</li>
+                    <li><i class="fas fa-credit-card text-info me-2"></i>Ödeme kasada yapılır</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

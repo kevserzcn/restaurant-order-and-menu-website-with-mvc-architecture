@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}İletişim - Ablaların Yeri{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #f8f9fa;
+    }
+    nav.navbar {
+        background: rgba(255,255,255,0.97) !important;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+    nav.navbar .navbar-brand,
+    nav.navbar .nav-link {
+        color: #000 !important;
+    }
+    nav.navbar .nav-link:hover {
+        color: #ff6600 !important;
+    }
+    .contact-card {
+        background: #fff7f0;
+        border-radius: 18px;
+        box-shadow: 4px 12px 32px rgba(0,0,0,0.13);
+        border: none;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+    }
+    .contact-card h2 {
+        color: #ff8000;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .form-control, .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #ff6600;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+    }
+    .btn-submit {
+        background: #ff6600;
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .btn-submit:hover {
+        background: #e55a00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+    }
+    .rating-stars {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    .rating-stars input[type="radio"] {
+        display: none;
+    }
+    .rating-stars label {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .rating-stars label:hover,
+    .rating-stars input[type="radio"]:checked ~ label,
+    .rating-stars label:hover ~ label {
+        color: #ffd700;
+    }
+    .rating-stars input[type="radio"]:checked ~ label {
+        color: #ffd700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="contact-card">
+            <h2><i class="fas fa-envelope me-2"></i>İletişim Formu</h2>
+            <p class="text-muted mb-4">İstek veya şikayetlerinizi bize iletin. </p>
+            
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                    {% if form.name.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                    {% if form.email.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.type.label(class="form-label") }}
+                    {{ form.type(class="form-select" + (" is-invalid" if form.type.errors else "")) }}
+                    {% if form.type.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.type.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    {{ form.message.label(class="form-label") }}
+                    {{ form.message(class="form-control" + (" is-invalid" if form.message.errors else ""), rows="5") }}
+                    {% if form.message.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.message.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-submit">
+                        <i class="fas fa-paper-plane me-2"></i>Gönder
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="text-center">
+            <a href="{{ url_for('user.reviews') }}" class="btn btn-outline-primary">
+                <i class="fas fa-comments me-2"></i>Yorumları Görüntüle
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

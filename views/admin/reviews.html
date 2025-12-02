@@ -1,0 +1,283 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Yorumlar - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #fff !important;
+    }
+    
+    h2 {
+        color: #ff8000 !important;
+        font-weight: 700 !important;
+    }
+    
+    .admin-card {
+        background: #fff7f0 !important;
+        border-radius: 18px;
+        box-shadow: 4px 12px 32px rgba(0,0,0,0.1);
+        border: none;
+        margin-bottom: 24px;
+    }
+    
+    .admin-card .card-header {
+        background: #ffe5cc !important;
+        border-radius: 18px 18px 0 0;
+        border-bottom: none;
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .admin-card .card-header h5 {
+        color: #ff8000 !important;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .stats-card h4 {
+        color: #ff8000 !important;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-card p {
+        color: #8a5b2c !important;
+        margin: 0;
+        font-weight: 500;
+    }
+    
+    .review-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #ff6600;
+    }
+    
+    .review-card.has-reply {
+        border-left-color: #28a745;
+    }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+    
+    .review-author {
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .review-email {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .review-date {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .review-type {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .review-type.request {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .review-type.complaint {
+        background: #ffebee;
+        color: #c62828;
+    }
+    
+    .review-type.comment {
+        background: #f1f8e9;
+        color: #558b2f;
+    }
+    
+    .review-rating {
+        color: #ffd700;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .review-message {
+        color: #555;
+        line-height: 1.6;
+        margin-top: 0.5rem;
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+    
+    .review-reply {
+        background: #e8f5e9;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        border-left: 3px solid #28a745;
+    }
+    
+    .review-reply-header {
+        font-weight: 600;
+        color: #28a745;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .review-reply-content {
+        color: #333;
+        line-height: 1.6;
+    }
+    
+    .badge-replied {
+        background: #28a745 !important;
+        color: white !important;
+    }
+    
+    .badge-pending {
+        background: #ffc107 !important;
+        color: #000 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-comments me-2"></i>Yorumlar ve İletişim</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stats-card">
+            <h4>{{ total_contacts }}</h4>
+            <p>Toplam Mesaj</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card">
+            <h4>{{ comments_count }}</h4>
+            <p>Yorum</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card">
+            <h4>{{ replied_count }}</h4>
+            <p>Cevaplanan</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card">
+            <h4>{{ pending_replies }}</h4>
+            <p>Bekleyen Cevap</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Tüm Yorumlar ve İletişimler</h5>
+            </div>
+            <div class="card-body">
+                {% if contacts %}
+                    {% for contact in contacts %}
+                    <div class="review-card {% if contact.reply %}has-reply{% endif %}">
+                        <div class="review-header">
+                            <div>
+                                <div class="review-author">{{ contact.name }}</div>
+                                <div class="review-email">{{ contact.email }}</div>
+                                <div class="review-date">{{ contact.created_at|datetime_tr }}</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="review-type {{ contact.type }}">{{ contact.get_type_display() }}</span>
+                                <br>
+                                {% if contact.reply %}
+                                    <span class="badge badge-replied mt-2">Cevaplandı</span>
+                                {% else %}
+                                    <span class="badge badge-pending mt-2">Cevap Bekliyor</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if contact.rating %}
+                        <div class="review-rating">
+                            {% for i in range(contact.rating) %}
+                                ⭐
+                            {% endfor %}
+                            {% for i in range(5 - contact.rating) %}
+                                <span style="color: #ddd;">⭐</span>
+                            {% endfor %}
+                            <span class="text-muted ms-2">({{ contact.rating }}/5)</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="review-message">
+                            <strong>Mesaj:</strong><br>
+                            {{ contact.message }}
+                        </div>
+                        
+                        {% if contact.reply %}
+                        <div class="review-reply">
+                            <div class="review-reply-header">
+                                <i class="fas fa-reply me-1"></i>
+                                Admin Cevabı
+                                {% if contact.admin_replier %}
+                                    ({{ contact.admin_replier.name }})
+                                {% endif %}
+                                - {{ contact.replied_at|datetime_tr }}
+                            </div>
+                            <div class="review-reply-content">{{ contact.reply }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-3">
+                            {% if not contact.reply %}
+                                <a href="{{ url_for('admin.reply_to_review', contact_id=contact.id) }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-reply me-1"></i>Cevap Yaz
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('admin.reply_to_review', contact_id=contact.id) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-edit me-1"></i>Cevabı Düzenle
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                        <h4>Henüz yorum veya iletişim yok</h4>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,284 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #fdf6ef;
+    }
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #222;
+        text-align: center;
+        margin: 2rem 0 1.5rem 0;
+    }
+    .stats-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: center;
+        margin-bottom: 2.5rem;
+    }
+    .stat-card {
+        background: #fff;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+        padding: 1.2rem 1.7rem 1.1rem 1.7rem;
+        min-width: 150px;
+        max-width: 200px;
+        flex: 1 1 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        transition: box-shadow 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    .stat-card img {
+        width: 38px;
+        height: 38px;
+        margin-bottom: 0.5rem;
+    }
+    .stat-card .stat-label {
+        font-size: 1.05rem;
+        color: #ff6600;
+        font-weight: 600;
+        margin-bottom: 0.1rem;
+        letter-spacing: 0.1px;
+    }
+    .stat-card .stat-value {
+        font-size: 1.6rem;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 0.1rem;
+    }
+    .stat-card.stat-payment {
+        background: #ff8c1a;
+        color: #fff;
+        box-shadow: 0 4px 18px rgba(255,140,26,0.15);
+    }
+    .stat-card.stat-payment .stat-label,
+    .stat-card.stat-payment .stat-value {
+        color: #fff;
+    }
+    .stat-card.stat-payment img {
+        filter: brightness(1.1) drop-shadow(0 2px 8px #fff2);
+    }
+    @media (max-width: 900px) {
+        .stats-row {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+    .admin-section-title {
+        background: #ff6600;
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 700;
+        border-radius: 12px 12px 0 0;
+        padding: 0.6rem 1.2rem;
+        margin-bottom: 0;
+        letter-spacing: 0.5px;
+    }
+    .admin-card {
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    .admin-card .card-header {
+        background: #fff6e6;
+        border-bottom: 1px solid #ffe0b2;
+        font-weight: 600;
+        color: #ff6600;
+        font-size: 1.1rem;
+    }
+    .admin-card .card-body {
+        background: #fff;
+    }
+    .badge.bg-danger {
+        background: #e74c3c !important;
+    }
+    .badge.bg-success {
+        background: #27ae60 !important;
+    }
+    .badge.bg-warning {
+        background: #f1c40f !important;
+        color: #fff;
+    }
+    .btn-orange {
+        background: #ff6600;
+        border-color: #ff6600;
+        color: #fff;
+    }
+    .btn-orange:hover, .btn-orange:focus {
+        background: #ff8c1a;
+        border-color: #ff8c1a;
+        color: #fff;
+    }
+    .card-title, .card-text, .admin-section-title, .dashboard-title {
+        color: #222 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-title">Admin Paneli</div>
+<div class="stats-row">
+    <div class="stat-card">
+        <img src="{{ url_for('static', filename='images/ToplamMasa.png') }}" alt="Toplam Masa">
+        <div class="stat-label">Toplam Masa</div>
+        <div class="stat-value">{{ tables|length }}</div>
+    </div>
+    <div class="stat-card">
+        <img src="{{ url_for('static', filename='images/DoluMasa.png') }}" alt="Dolu Masa">
+        <div class="stat-label">Dolu Masa</div>
+        <div class="stat-value">{{ tables|selectattr('is_occupied')|list|length }}</div>
+    </div>
+    <div class="stat-card">
+        <img src="{{ url_for('static', filename='images/BosMasa.png') }}" alt="Boş Masa">
+        <div class="stat-label">Boş Masa</div>
+        <div class="stat-value">{{ tables|rejectattr('is_occupied')|list|length }}</div>
+    </div>
+    <div class="stat-card">
+        <img src="{{ url_for('static', filename='images/BekleyenSiparis.png') }}" alt="Bekleyen Siparişler">
+        <div class="stat-label">Bekleyen Siparişler</div>
+        <div class="stat-value">{{ orders|length }}</div>
+    </div>
+    <div class="stat-card stat-payment">
+        <img src="{{ url_for('static', filename='images/OdemeBekleyenSiparis.png') }}" alt="Ödeme Bekleyen Siparişler">
+        <div class="stat-label">Ödeme Bekleyen Siparişler</div>
+        <div class="stat-value">{{ payment_pending_orders|length }}</div>
+    </div>
+</div>
+
+
+{% if orders %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-warning">
+                    <i class="fas fa-clock me-2"></i>Bekleyen Siparişler
+                </h5>
+                <span class="badge bg-warning">{{ orders|length }} Sipariş</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for order in orders %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <h6 class="card-title">Sipariş #{{ order.id }}</h6>
+                                <p class="card-text">
+                                    <strong>Müşteri:</strong> {{ order.customer.name if order.customer else 'N/A' }}<br>
+                                    <strong>Masa:</strong> {{ order.table.name if order.table else 'N/A' }}<br>
+                                    <strong>Tutar:</strong> {{ "%.2f"|format(order.total_amount) }} ₺<br>
+                                    <strong>Durum:</strong> <span class="badge bg-warning">Bekliyor</span>
+                                </p>
+                                {% if order.table %}
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('admin.table_details', table_id=order.table.id) }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-eye me-1"></i>Detay
+                                    </a>
+                                    <a href="{{ url_for('admin.cancel_payment', order_id=order.id) }}" class="btn btn-outline-warning btn-sm">
+                                        <i class="fas fa-times"></i> İptal
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{% if payment_pending_orders %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Ödeme Bekleyen Siparişler
+                </h5>
+                <span class="badge bg-danger">{{ payment_pending_orders|length }} Sipariş</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for order in payment_pending_orders %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-danger">
+                            <div class="card-body">
+                                <h6 class="card-title">Sipariş #{{ order.id }}</h6>
+                                <p class="card-text">
+                                    <strong>Masa:</strong> {{ order.table.name if order.table else 'N/A' }}<br>
+                                    <strong>Tutar:</strong> {{ "%.2f"|format(order.total_amount) }} ₺<br>
+                                    <strong>Durum:</strong> <span class="badge bg-danger">Ödeme Bekliyor</span>
+                                </p>
+                                    {% if order.table %}
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('admin.complete_payment', order_id=order.id) }}" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-cash-register me-1"></i>Ödemeyi Tamamla
+                                        </a>
+                                        <a href="{{ url_for('admin.cancel_payment', order_id=order.id) }}" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-times"></i> İptal
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="admin-section-title">Masa Durumları</div>
+            <div class="card-body">
+                <div class="row">
+                    {% for table in tables %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card {% if table.is_occupied %}border-danger{% else %}border-success{% endif %}">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ table.name }}</h5>
+                                <p class="card-text">
+                                    <i class="fas fa-users me-1"></i>Kapasite: {{ table.capacity }}
+                                    {% if table.waiter_name %}
+                                        <br><i class="fas fa-user me-1"></i>Garson: {{ table.waiter_name }}
+                                    {% endif %}
+                                </p>
+                                {% if table.is_occupied %}
+                                    <span class="badge bg-danger">Dolu</span>
+                                    <div class="mt-2">
+                                        <a href="{{ url_for('admin.table_details', table_id=table.id) }}" class="btn btn-orange btn-sm">
+                                            <i class="fas fa-eye me-1"></i>Detay
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span class="badge bg-success">Boş</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

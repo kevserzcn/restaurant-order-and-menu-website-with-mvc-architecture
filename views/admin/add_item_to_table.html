@@ -1,0 +1,209 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Masaya Ürün Ekle - {{ table.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    h2, h3, h4, h5, h6 {
+        color: #2c3e50 !important;
+    }
+    
+    .btn-primary {
+        background-color: #ff6600 !important;
+        border-color: #ff6600 !important;
+        color: #ffffff !important;
+    }
+    
+    .btn-primary:hover {
+        background-color: #ff8c1a !important;
+        border-color: #ff8c1a !important;
+    }
+    
+    .btn-outline-secondary {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        color: #ffffff !important;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #5a6268 !important;
+        border-color: #545b62 !important;
+    }
+    
+    .card {
+        background-color: #f8f9fa !important;
+        color: #2c3e50 !important;
+        border: 1px solid #dee2e6 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    .card-header {
+        color: #2c3e50 !important;
+        background-color: #e9ecef !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+    
+    .card-body {
+        background-color: #f8f9fa !important;
+    }
+    
+    .form-label {
+        color: #2c3e50 !important;
+        font-weight: 600;
+    }
+    
+    .form-control, .form-select {
+        background-color: #ffffff !important;
+        color: #2c3e50 !important;
+        border: 1px solid #ced4da !important;
+    }
+    
+    .form-text {
+        color: #6c757d !important;
+    }
+    
+    .text-muted {
+        color: #6c757d !important;
+    }
+    
+    .fw-bold {
+        color: #2c3e50 !important;
+    }
+    
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: #ffffff !important;
+    }
+    
+    .badge.bg-success {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+    }
+    
+    .total-box {
+        background-color: #fff6e6 !important;
+        border: 2px solid #ff6600 !important;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .total-box p {
+        color: #ff6600 !important;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .total-box h4 {
+        color: #ff6600 !important;
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-utensils me-2"></i>Masaya Ürün Ekle - {{ table.name }}</h2>
+            <a href="{{ url_for('admin.table_details', table_id=table.id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Ürün Seçimi</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.product_id.label(class="form-label") }}
+                        {{ form.product_id(class="form-select" + (" is-invalid" if form.product_id.errors else "")) }}
+                        {% if form.product_id.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.product_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Masaya eklemek istediğiniz ürünü seçiniz</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.quantity.label(class="form-label") }}
+                        {{ form.quantity(class="form-control" + (" is-invalid" if form.quantity.errors else "")) }}
+                        {% if form.quantity.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.quantity.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Ürün miktarını giriniz (1-10 arası)</div>
+                    </div>
+                    
+                    <div>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Masa Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Masa Adı:</span>
+                    <span class="fw-bold">{{ table.name }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Kapasite:</span>
+                    <span><i class="fas fa-users me-1"></i>{{ table.capacity }} Kişi</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Garson:</span>
+                    <span>
+                        {% if table.waiter_name %}
+                            {{ table.waiter_name }}
+                        {% else %}
+                            <span class="text-muted">Atanmamış</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Durum:</span>
+                    <span>
+                        {% if table.is_occupied %}
+                            <span class="badge bg-danger">Dolu</span>
+                        {% else %}
+                            <span class="badge bg-success">Boş</span>
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="total-box">
+                    <p>MEVCUT HESAP</p>
+                    <h4>{{ "%.2f"|format(table.get_total_amount()) }} ₺</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

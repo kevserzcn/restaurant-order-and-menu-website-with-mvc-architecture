@@ -1,0 +1,288 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Ürün Yönetimi - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #ffffff !important;
+    }
+    .container, .container-fluid, main, .admin-content {
+        background: #ffffff !important;
+    }
+    .bg-primary, .table-primary, .btn-primary {
+        background: transparent !important;
+    }
+    .row, .col, .col-12, .col-md-12 {
+        background: transparent !important;
+    }
+    .products-title {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 1.5rem;
+    }
+    .add-product-btn {
+        background: #ff6600;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+    .add-product-btn:hover {
+        background: #e55a00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+        color: white;
+    }
+    .products-card {
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: none;
+        overflow: hidden;
+    }
+    .products-table {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .products-table thead th {
+        background: #ff6600;
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        padding: 1rem 0.8rem;
+        font-size: 0.95rem;
+    }
+    .products-table tbody td {
+        padding: 1rem 0.8rem;
+        border-bottom: 1px solid #f8f9fa;
+        vertical-align: middle;
+    }
+    .products-table tbody tr:hover {
+        background: #fff6e6;
+    }
+    .product-image {
+        width: 55px;
+        height: 55px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #ffe0b2;
+    }
+    .product-placeholder {
+        background: #fff6e6;
+        border-radius: 8px;
+        border: 2px solid #ffe0b2;
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .product-name {
+        color: #222;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+    .product-description {
+        color: #666;
+        font-size: 0.85rem;
+    }
+    .category-badge {
+        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: #ffe0b2;
+        color: #222;
+    }
+    .category-badge.yemek {
+        background: #2196f3;
+        color: #fff;
+    }
+    .category-badge.tatlı {
+        background: #ffc107;
+        color: #fff;
+    }
+    .category-badge.içecek {
+        background: #00bcd4;
+        color: #fff;
+    }
+    .category-badge.salata {
+        background: #4caf50;
+        color: #fff;
+    }
+    .product-price {
+        color: #ff6600;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    .status-available {
+        background: #27ae60;
+        color: white;
+        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .status-unavailable {
+        background: #e74c3c;
+        color: white;
+        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .action-btn {
+        border-radius: 8px;
+        padding: 0.4rem 0.7rem;
+        margin: 0 0.1rem;
+        border: 1px solid;
+        font-size: 0.8rem;
+        transition: all 0.3s;
+    }
+    .action-btn-edit {
+        color: #ff6600;
+        border-color: #ff6600;
+        background: #fff;
+    }
+    .action-btn-edit:hover {
+        background: #ff6600;
+        color: white;
+    }
+    .action-btn-delete {
+        color: #e74c3c;
+        border-color: #e74c3c;
+        background: #fff;
+    }
+    .action-btn-delete:hover {
+        background: #e74c3c;
+        color: white;
+    }
+    .empty-state {
+        background: #fff;
+        border-radius: 18px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .empty-state i {
+        color: #ff6600;
+        margin-bottom: 1.5rem;
+    }
+    .empty-state h3 {
+        color: #222;
+        margin-bottom: 1rem;
+    }
+    .empty-state p {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="products-title"><i class="fas fa-utensils me-3"></i>Ürün Yönetimi</h2>
+            <a href="{{ url_for('admin.add_product') }}" class="add-product-btn">
+                <i class="fas fa-plus me-2"></i>Yeni Ürün Ekle
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="products-card card">
+            <div class="card-body">
+                {% if products %}
+                <div class="table-responsive">
+                    <table class="products-table table">
+                        <thead>
+                            <tr>
+                                <th>Resim</th>
+                                <th>Ürün Adı</th>
+                                <th>Kategori</th>
+                                <th>Fiyat</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td>
+                                    {% if product.image_url %}
+                                        {% if product.image_url.startswith('http') %}
+                                            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        {% elif product.image_url.startswith('/static/') %}
+                                            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        {% elif product.image_url.startswith('static/') %}
+                                            <img src="{{ '/' + product.image_url }}" alt="{{ product.name }}" class="product-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='images/' + product.image_url) }}" alt="{{ product.name }}" class="product-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        {% endif %}
+                                        <div class="product-placeholder" style="display: none;">
+                                            <i class="fas fa-utensils text-muted"></i>
+                                        </div>
+                                    {% else %}
+                                        <div class="product-placeholder">
+                                            <i class="fas fa-utensils text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <h6 class="product-name">{{ product.name }}</h6>
+                                    <small class="product-description">{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</small>
+                                </td>
+                                <td>
+                                    <span class="category-badge {{ product.category }}">
+                                        {{ product.category|title }}
+                                    </span>
+                                </td>
+                                <td class="product-price">{{ product.price }} ₺</td>
+                                <td>
+                                    {% if product.is_available %}
+                                        <span class="status-available">Mevcut</span>
+                                    {% else %}
+                                        <span class="status-unavailable">Tükendi</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('admin.edit_product', id=product.id) }}" class="action-btn action-btn-edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin.delete_product', id=product.id) }}" class="action-btn action-btn-delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-utensils fa-5x"></i>
+                    <h3>Henüz Ürün Yok</h3>
+                    <p>İlk ürününüzü eklemek için aşağıdaki butona tıklayın.</p>
+                    <a href="{{ url_for('admin.add_product') }}" class="add-product-btn">
+                        <i class="fas fa-plus me-2"></i>Ürün Ekle
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

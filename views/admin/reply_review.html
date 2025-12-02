@@ -1,0 +1,128 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Cevap Yaz - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #f8f9fa;
+    }
+    .reply-card {
+        background: #fff7f0;
+        border-radius: 18px;
+        box-shadow: 4px 12px 32px rgba(0,0,0,0.13);
+        border: none;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .reply-card h3 {
+        color: #ff8000;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    .review-info {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #ff6600;
+    }
+    .review-info h5 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .review-info p {
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+    .form-label {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+        color: #333;
+        background-color: #fff;
+    }
+    .form-control:focus {
+        border-color: #ff6600;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+        color: #333;
+    }
+    .btn-submit {
+        background: #ff6600;
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .btn-submit:hover {
+        background: #e55a00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="reply-card">
+            <h3><i class="fas fa-reply me-2"></i>Cevap Yaz</h3>
+            
+            <!-- Yorum Bilgileri -->
+            <div class="review-info">
+                <h5>Yorum/İletişim Bilgileri</h5>
+                <p><strong>Gönderen:</strong> {{ contact.name }}</p>
+                <p><strong>E-posta:</strong> {{ contact.email }}</p>
+                <p><strong>Tip:</strong> <span class="badge bg-info">{{ contact.get_type_display() }}</span></p>
+                <p><strong>Tarih:</strong> {{ contact.created_at|datetime_tr }}</p>
+                {% if contact.rating %}
+                <p><strong>Puan:</strong> 
+                    {% for i in range(contact.rating) %}⭐{% endfor %}
+                    {% for i in range(5 - contact.rating) %}<span style="color: #ddd;">⭐</span>{% endfor %}
+                    ({{ contact.rating }}/5)
+                </p>
+                {% endif %}
+                <p><strong>Mesaj:</strong></p>
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 0.5rem; color: #000;">
+                    {{ contact.message }}
+                </div>
+            </div>
+            
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-4">
+                    {{ form.reply.label(class="form-label") }}
+                    {{ form.reply(class="form-control" + (" is-invalid" if form.reply.errors else ""), rows="6") }}
+                    {% if form.reply.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.reply.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-submit">
+                        <i class="fas fa-paper-plane me-2"></i>Cevap Gönder
+                    </button>
+                    <a href="{{ url_for('admin.reviews') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,451 @@
+{% extends "base.html" %}
+
+{% block title %}Menü - {{ current_user.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(180deg, #ffffff 0%, #ffffff 45%, #003087 45%, #003087 100%);
+        font-family: Arial, sans-serif;
+        overflow-x: hidden;
+        min-height: 100vh;
+        margin: 0;
+        color: #000;
+    }
+
+    nav.navbar {
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    nav.navbar .navbar-brand,
+    nav.navbar .nav-link {
+        color: #000 !important;
+    }
+
+    nav.navbar .nav-link:hover {
+        color: #ff6600 !important;
+    }
+
+    main.container {
+        max-width: 1400px !important;
+        padding: 2.5rem 1rem 4rem 1rem !important;
+        background: transparent;
+    }
+
+    .menu-header {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 35px;
+        margin-bottom: 30px;
+        color: #000;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+        border-left: 6px solid #ff6600;
+    }
+    
+    .menu-header h2 {
+        margin: 0;
+        font-size: 2.2rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #000;
+    }
+    
+    .category-section {
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+    
+    .category-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #000;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .category-title img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+    }
+    
+    .product-grid {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e0 #f7fafc;
+    }
+    
+    .product-grid::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .product-grid::-webkit-scrollbar-track {
+        background: #f7fafc;
+        border-radius: 10px;
+    }
+    
+    .product-grid::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 10px;
+    }
+    
+    .product-card-modern {
+        min-width: 200px;
+        flex-shrink: 0;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .product-card-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .product-image-container {
+        width: 100%;
+        height: 180px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    
+    .product-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .product-info {
+        padding: 15px;
+        text-align: center;
+    }
+    
+    .product-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #000;
+        margin-bottom: 10px;
+    }
+    
+    .quantity-selector {
+        width: 80px;
+        margin: 10px auto;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 5px;
+    }
+    
+    .add-to-cart-btn {
+        width: 100%;
+        background: #ff6600;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    
+    .add-to-cart-btn:hover {
+        background: #e55a00;
+    }
+    
+    .table-selector-card {
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.1);
+    }
+    
+    .search-box {
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.1);
+    }
+    
+    .search-box input {
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        padding: 12px 20px;
+    }
+    
+    .search-box input:focus {
+        border-color: #003087;
+        box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.15);
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-modern {
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="menu-header">
+    <h2><i class="fas fa-book me-2"></i>Menümüz</h2>
+</div>
+
+{% if active_order and active_order.status in ['completed', 'payment_pending'] and active_order.table %}
+<div class="alert alert-info" style="background: rgba(255, 255, 255, 0.95); border-left: 4px solid #ff6600; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <i class="fas fa-info-circle me-2" style="color: #ff6600;"></i>
+    <strong style="color: #ff6600;">Dikkat:</strong> 
+    <span style="color: #333;">{{ active_order.table.name }} masanıza eklediğiniz ürünler mevcut siparişinize eklenecektir.</span>
+</div>
+{% endif %}
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" class="form-control" id="searchInput" placeholder="🔍 Ürün ara...">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="search-box">
+            <div class="action-buttons">
+                <a href="{{ url_for('user.cart') }}" class="btn btn-primary btn-modern flex-grow-1">
+                    <i class="fas fa-shopping-cart me-1"></i>Sepet
+                </a>
+                <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary btn-modern flex-grow-1">
+                    <i class="fas fa-home me-1"></i>Ana Sayfa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<section id="yemekler" class="category-section">
+    <div class="category-title">
+        <img src="{{ url_for('static', filename='images/yemekler.png') }}" alt="Yemekler">
+        <span>Yemek Çeşitlerimiz</span>
+    </div>
+    <div class="product-grid">
+        {% for product in products %}
+            {% if product.category == 'yemek' %}
+                <div class="product-card-modern" data-name="{{ product.name.lower() }}">
+                    <div class="product-image-container">
+                        {% if product.image_url %}
+                            {% if product.image_url.startswith('http') %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% elif product.image_url.startswith('/static/') %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% elif product.image_url.startswith('static/') %}
+                                <img src="{{ '/' + product.image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/' + product.image_url) }}" alt="{{ product.name }}">
+                            {% endif %}
+                        {% else %}
+                            <i class="fas fa-utensils fa-3x text-muted"></i>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">{{ product.name }}</div>
+                        <form class="add-to-cart-form">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <select name="quantity" class="quantity-selector form-select form-select-sm">
+                                {% for i in range(1, 11) %}
+                                <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="add-to-cart-btn">Sepete Ekle</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<section id="tatlilar" class="category-section">
+    <div class="category-title">
+        <img src="{{ url_for('static', filename='images/tatlilar.png') }}" alt="Tatlılar">
+        <span>Tatlılar</span>
+    </div>
+    <div class="product-grid">
+        {% for product in products %}
+            {% if product.category == 'tatlı' %}
+                <div class="product-card-modern" data-name="{{ product.name.lower() }}">
+                    <div class="product-image-container">
+                        {% if product.image_url %}
+                            {% if product.image_url.startswith('http') %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% elif product.image_url.startswith('/static/') %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% elif product.image_url.startswith('static/') %}
+                                <img src="{{ '/' + product.image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/' + product.image_url) }}" alt="{{ product.name }}">
+                            {% endif %}
+                        {% else %}
+                            <i class="fas fa-birthday-cake fa-3x text-muted"></i>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">{{ product.name }}</div>
+                        <form class="add-to-cart-form">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <select name="quantity" class="quantity-selector form-select form-select-sm">
+                                {% for i in range(1, 11) %}
+                                <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="add-to-cart-btn">Sepete Ekle</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+{% set drinks_header_image = 'icecekler.png' %}
+<section id="icecekler" class="category-section">
+    <div class="category-title">
+        <img src="{{ url_for('static', filename='images/' + drinks_header_image) }}" alt="İçecekler">
+        <span>İçecekler</span>
+    </div>
+    <div class="product-grid">
+        {% for product in products %}
+            {% if product.category == 'içecek' %}
+                <div class="product-card-modern" data-name="{{ product.name.lower() }}">
+                    <div class="product-image-container">
+                        {% if product.image_url %}
+                            {% if product.image_url.startswith('http') %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% elif product.image_url.startswith('/static/') %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% elif product.image_url.startswith('static/') %}
+                                <img src="{{ '/' + product.image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/' + product.image_url) }}" alt="{{ product.name }}">
+                            {% endif %}
+                        {% else %}
+                            <i class="fas fa-coffee fa-3x text-muted"></i>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">{{ product.name }}</div>
+                        <form class="add-to-cart-form">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <select name="quantity" class="quantity-selector form-select form-select-sm">
+                                {% for i in range(1, 11) %}
+                                <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="add-to-cart-btn">Sepete Ekle</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<section id="salatalar" class="category-section">
+    <div class="category-title">
+        <img src="{{ url_for('static', filename='images/salatalar.png') }}" alt="Salatalar">
+        <span>Salatalar</span>
+    </div>
+    <div class="product-grid">
+        {% for product in products %}
+            {% if product.category == 'salata' %}
+                <div class="product-card-modern" data-name="{{ product.name.lower() }}">
+                    <div class="product-image-container">
+                        {% if product.image_url %}
+                            {% if product.image_url.startswith('http') %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% elif product.image_url.startswith('/static/') %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% elif product.image_url.startswith('static/') %}
+                                <img src="{{ '/' + product.image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/' + product.image_url) }}" alt="{{ product.name }}">
+                            {% endif %}
+                        {% else %}
+                            <i class="fas fa-leaf fa-3x text-muted"></i>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">{{ product.name }}</div>
+                        <form class="add-to-cart-form">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <select name="quantity" class="quantity-selector form-select form-select-sm">
+                                {% for i in range(1, 11) %}
+                                <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="add-to-cart-btn">Sepete Ekle</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('Menu.html loaded');
+console.log('jQuery version:', typeof $ !== 'undefined' ? $.fn.jquery : 'jQuery not loaded!');
+console.log('Forms found:', $('.add-to-cart-form').length);
+
+$(document).ready(function() {
+    console.log('Document ready - Forms count:', $('.add-to-cart-form').length);
+    
+    $('#searchInput').on('keyup', function() {
+        var searchTerm = $(this).val().toLowerCase();
+        $('.product-card-modern').each(function() {
+            var productName = $(this).data('name');
+            if (productName && productName.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+});
+
+function showToast(message) {
+    var toast = $('<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">' +
+        '<div class="toast align-items-center text-bg-success border-0 show" role="alert">' +
+        '<div class="d-flex">' +
+        '<div class="toast-body">' + message + '</div>' +
+        '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>' +
+        '</div></div></div>');
+    $('body').append(toast);
+    setTimeout(function() {
+        toast.fadeOut(300, function() { $(this).remove(); });
+    }, 2500);
+}
+</script>
+{% endblock %}

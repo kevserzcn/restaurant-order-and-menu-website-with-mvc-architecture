@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Masa Ekle - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0" style="color: #333;"><i class="fas fa-plus me-2"></i>Yeni Masa Ekle</h2>
+            <a href="{{ url_for('admin.tables') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Masa Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text" style="color: #ff6600;">Masa adını giriniz (ör: Müzehher, Elf's, Lavinia)</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.capacity.label(class="form-label") }}
+                        {{ form.capacity(class="form-control" + (" is-invalid" if form.capacity.errors else "")) }}
+                        {% if form.capacity.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.capacity.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text" style="color: #ff6600;">Masa kapasitesini giriniz (1-20 arası)</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn" style="background-color: #ff6600 !important; border-color: #ff6600 !important; color: white !important; font-weight: bold !important;">
+                            <i class="fas fa-save me-2"></i>Masa Ekle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Yardım</h5>
+            </div>
+            <div class="card-body">
+                <h6>Masa Adı:</h6>
+                <p style="color: #ff6600;">Her masa için benzersiz bir isim giriniz. Ör: Müzehher, Elf's, Lavinia.</p>
+                
+                <hr>
+                
+                <h6>Kapasite:</h6>
+                <p style="color: #ff6600;">Masada oturabilecek kişi sayısını giriniz. 1-20 arası değerler kabul edilir.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

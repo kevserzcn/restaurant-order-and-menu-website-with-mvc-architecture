@@ -1,0 +1,322 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Sipariş Yönetimi - Admin{% endblock %}
+
+{% block content %}
+<style>
+    h2, h3 {
+        color: #222;
+        font-weight: bold;
+    }
+    .fw-bold, .table .fw-bold {
+        color: #222 !important;
+    }
+    .text-muted, .table .text-muted {
+        color: #888 !important;
+    }
+    .table th {
+        color: #ff6600;
+        font-weight: 600;
+        background: #fff;
+    }
+    .table td {
+        color: #222;
+    }
+    .badge.bg-info {
+        background: #00bcd4 !important;
+        color: #fff !important;
+        font-weight: 500;
+    }
+    .badge.bg-secondary {
+        background: #6c757d !important;
+        color: #fff !important;
+        font-weight: 500;
+    }
+    .badge.bg-warning {
+        background: #ffc107 !important;
+        color: #fff !important;
+        font-weight: 500;
+    }
+    .badge.bg-success {
+        background: #27ae60 !important;
+        color: #fff !important;
+        font-weight: 500;
+    }
+    .btn-outline-primary {
+        color: #ff6600 !important;
+        border-color: #ff6600 !important;
+        background: #fff !important;
+    }
+    .btn-outline-primary:hover {
+        background: #ff6600 !important;
+        color: #fff !important;
+    }
+    .btn-outline-success {
+        color: #27ae60 !important;
+        border-color: #27ae60 !important;
+        background: #fff !important;
+    }
+    .btn-outline-success:hover {
+        background: #27ae60 !important;
+        color: #fff !important;
+    }
+    .btn-outline-info {
+        color: #00bcd4 !important;
+        border-color: #00bcd4 !important;
+        background: #fff !important;
+    }
+    .btn-outline-info:hover {
+        background: #00bcd4 !important;
+        color: #fff !important;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-list me-2"></i>Sipariş Yönetimi</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if orders %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Müşteri</th>
+                                <th>Masa</th>
+                                <th>Ürün Sayısı</th>
+                                <th>Tutar</th>
+                                <th>Durum</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="fw-bold">#{{ order.id }}</td>
+                                <td>
+                                    {% if order.customer %}
+                                        <i class="fas fa-user me-1"></i>{{ order.customer.name }}
+                                        <br><small class="text-muted">{{ order.customer.email }}</small>
+                                    {% else %}
+                                        <span class="text-muted">Bilinmiyor</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if order.table %}
+                                        <i class="fas fa-table me-1"></i>{{ order.table.name }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ order.total_items() }}</span>
+                                </td>
+                                <td class="fw-bold">{{ "%.2f"|format(order.total_amount) }} ₺</td>
+                                <td>
+                                        {% if order.status == 'pending' %}
+                                            <span class="badge bg-warning">Beklemede</span>
+                                        {% elif order.status == 'completed' %}
+                                            <span class="badge bg-info">Hazırlanıyor</span>
+                                        {% elif order.status == 'paid' %}
+                                            <span class="badge bg-success">Ödendi</span>
+                                        {% elif order.status == 'cancelled' %}
+                                            <span class="badge bg-secondary">İptal Edildi</span>
+                                        {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ order.created_at|datetime_tr }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-primary btn-sm view-order-btn" data-order-id="{{ order.id }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if order.status == 'pending' %}
+                                        <button class="btn btn-outline-success btn-sm update-status-btn" data-order-id="{{ order.id }}" data-status="completed">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        {% elif order.status == 'completed' %}
+                                        <button class="btn btn-outline-info btn-sm update-status-btn" data-order-id="{{ order.id }}" data-status="paid">
+                                            <i class="fas fa-credit-card"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-list fa-5x text-muted mb-4"></i>
+                    <h3>Henüz Sipariş Yok</h3>
+                    <p class="text-muted">Müşteriler sipariş verdiğinde burada görünecek.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.view-order-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const orderId = this.dataset.orderId;
+            viewOrder(orderId);
+        });
+    });
+
+    document.querySelectorAll('.update-status-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const orderId = this.dataset.orderId;
+            const status = this.dataset.status;
+            updateOrderStatus(orderId, status);
+        });
+    });
+});
+
+function viewOrder(orderId) {
+    $.ajax({
+        url: '/admin/api/order/' + orderId,
+        method: 'GET',
+        success: function(order) {
+            let itemsHtml = '';
+            let subtotal = 0;
+            
+            order.items.forEach(function(item) {
+                itemsHtml += `
+                    <tr>
+                        <td style="color: #222;">${item.product_name}</td>
+                        <td class="text-center" style="color: #222;">${item.quantity}</td>
+                        <td class="text-end" style="color: #222;">${item.unit_price.toFixed(2)} ₺</td>
+                        <td class="text-end fw-bold" style="color: #222;">${item.total.toFixed(2)} ₺</td>
+                    </tr>
+                `;
+                subtotal += item.total;
+            });
+            
+            let statusBadge = '';
+            if (order.status === 'pending') {
+                statusBadge = '<span class="badge bg-warning">Beklemede</span>';
+            } else if (order.status === 'completed') {
+                statusBadge = '<span class="badge bg-info">Hazırlanıyor</span>';
+            } else if (order.status === 'paid') {
+                statusBadge = '<span class="badge bg-success">Ödendi</span>';
+            } else if (order.status === 'cancelled') {
+                statusBadge = '<span class="badge bg-secondary">İptal Edildi</span>';
+            }
+            
+            let paymentHtml = '';
+            if (order.payment) {
+                let methodText = '';
+                if (order.payment.method === 'cash') methodText = 'Nakit';
+                else if (order.payment.method === 'card') methodText = 'Kredi Kartı';
+                
+                paymentHtml = `
+                    <div class="alert alert-success mt-3">
+                        <h6><i class="fas fa-check-circle me-2"></i>Ödeme Bilgileri</h6>
+                        <p class="mb-1"><strong>Yöntem:</strong> ${methodText}</p>
+                        <p class="mb-1"><strong>Tutar:</strong> ${order.payment.amount.toFixed(2)} ₺</p>
+                        ${order.payment.transaction_id ? '<p class="mb-1"><strong>İşlem No:</strong> ' + order.payment.transaction_id + '</p>' : ''}
+                        <p class="mb-0"><strong>Tarih:</strong> ${order.payment.created_at}</p>
+                    </div>
+                `;
+            }
+            
+            let modalHtml = `
+                <div class="modal fade" id="orderDetailModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background: linear-gradient(135deg, #ff6600 0%, #ff8833 100%); color: white;">
+                                <h5 class="modal-title"><i class="fas fa-receipt me-2"></i>Sipariş Detayları #${order.id}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong style="color: #222;"><i class="fas fa-user me-2"></i>Müşteri:</strong> <span style="color: #222;">${order.customer.name}</span></p>
+                                        <p class="mb-1 text-muted"><small>${order.customer.email}</small></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong style="color: #222;"><i class="fas fa-table me-2"></i>Masa:</strong> <span style="color: #222;">${order.table}</span></p>
+                                        <p class="mb-1"><strong style="color: #222;"><i class="fas fa-calendar me-2"></i>Tarih:</strong> <span style="color: #222;">${order.created_at}</span></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <strong style="color: #222;">Durum:</strong> ${statusBadge}
+                                </div>
+                                
+                                <h6 class="border-bottom pb-2 mb-3" style="color: #222;"><i class="fas fa-shopping-cart me-2"></i>Sipariş Ürünleri</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead style="background-color: #f8f9fa;">
+                                            <tr>
+                                                <th style="color: #222;">Ürün</th>
+                                                <th class="text-center" style="color: #222;">Adet</th>
+                                                <th class="text-end" style="color: #222;">Birim Fiyat</th>
+                                                <th class="text-end" style="color: #222;">Toplam</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${itemsHtml}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-active">
+                                                <td colspan="3" class="text-end fw-bold" style="color: #222;">TOPLAM:</td>
+                                                <td class="text-end fw-bold" style="color: #ff6600; font-size: 1.1em;">${order.total_amount.toFixed(2)} ₺</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                
+                                ${paymentHtml}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('#orderDetailModal').remove();
+            
+            $('body').append(modalHtml);
+            $('#orderDetailModal').modal('show');
+        },
+        error: function() {
+            alert('Sipariş detayları yüklenirken hata oluştu!');
+        }
+    });
+}
+
+function updateOrderStatus(orderId, status) {
+    $.ajax({
+        url: '/api/order/' + orderId + '/status',
+        method: 'POST',
+        data: { status: status },
+        success: function(response) {
+            if (response.success) {
+                location.reload();
+            } else {
+                console.error('Hata:', response.message);
+            }
+        },
+        error: function() {
+            console.error('Bir hata oluştu!');
+        }
+    });
+}
+</script>
+{% endblock %}

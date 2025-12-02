@@ -1,0 +1,420 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Raporlar - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+    
+    h2, h5 {
+        color: #ff8000;
+        font-weight: 600;
+    }
+    
+    .admin-card {
+        background: linear-gradient(135deg, #fff7f0 0%, #ffffff 100%);
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(255, 128, 0, 0.1);
+        margin-bottom: 25px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .admin-card:hover {
+        box-shadow: 0 6px 20px rgba(255, 128, 0, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #ffe5cc 0%, #ffd9b3 100%);
+        border-bottom: 2px solid #ff8000;
+        padding: 15px 20px;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .admin-stats-card {
+        border-radius: 15px;
+        padding: 25px;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .admin-stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .admin-stats-card h4 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: white;
+    }
+    
+    .admin-stats-card p {
+        font-size: 0.95rem;
+        opacity: 0.95;
+    }
+    
+    .stats-icon {
+        font-size: 3rem;
+        opacity: 0.3;
+    }
+    
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table thead th {
+        background-color: #fff7f0;
+        color: #ff8000;
+        border-bottom: 2px solid #ff8000;
+        font-weight: 600;
+        padding: 12px;
+    }
+    
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #fff7f0;
+        transform: scale(1.01);
+    }
+    
+    .table td {
+        vertical-align: middle;
+        padding: 12px;
+    }
+    
+    .btn-outline-primary {
+        color: #ff8000 !important;
+        border-color: #ff8000 !important;
+        background: transparent !important;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #ff8000 !important;
+        border-color: #ff8000 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 128, 0, 0.3);
+    }
+    
+    .btn-outline-primary i,
+    .btn-outline-primary:not(:hover) {
+        color: #ff8000 !important;
+    }
+    
+    .btn-outline-success {
+        color: #27ae60 !important;
+        border-color: #27ae60 !important;
+        background: transparent !important;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-success:hover {
+        background-color: #27ae60 !important;
+        border-color: #27ae60 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+    }
+    
+    .btn-outline-success i,
+    .btn-outline-success:not(:hover) {
+        color: #27ae60 !important;
+    }
+    
+    .badge.bg-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+    
+    .badge.bg-primary {
+        background: linear-gradient(135deg, #ff8000 0%, #e67300 100%) !important;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+    
+    .badge.bg-info {
+        background: linear-gradient(135deg, #003087 0%, #002060 100%) !important;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+    
+    .badge.bg-secondary {
+        background: linear-gradient(135deg, #7f8c8d 0%, #5d6d7e 100%) !important;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+    
+    .text-muted {
+        color: #95a5a6 !important;
+    }
+    
+    .btn-group .btn {
+        margin-left: 5px;
+    }
+    
+    .empty-state {
+        padding: 40px;
+        text-align: center;
+    }
+    
+    .empty-state i {
+        color: #ff8000;
+        opacity: 0.3;
+    }
+    
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .stats-green {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important;
+    }
+    
+    .stats-blue {
+        background: linear-gradient(135deg, #003087 0%, #002060 100%) !important;
+    }
+    
+    .stats-purple {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-chart-bar me-2"></i>Raporlar</h2>
+            <div class="btn-group">
+                <a href="{{ url_for('admin.export_pdf') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-pdf me-1"></i>PDF İndir
+                </a>
+                <a href="{{ url_for('admin.export_excel') }}" class="btn btn-outline-success">
+                    <i class="fas fa-file-excel me-1"></i>Excel İndir
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="admin-stats-card stats-green">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ "%.2f"|format(total_revenue) }} ₺</h4>
+                    <p class="mb-0">Toplam Gelir</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-money-bill-wave stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="admin-stats-card stats-blue">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ "%.2f"|format(today_revenue) }} ₺</h4>
+                    <p class="mb-0">Bugünkü Gelir</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-calendar-day stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="admin-stats-card stats-purple">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>{{ "%.2f"|format(monthly_revenue) }} ₺</h4>
+                    <p class="mb-0">Aylık Gelir</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-calendar-alt stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0">Ödeme Yöntemleri</h5>
+            </div>
+            <div class="card-body">
+                {% if payment_methods %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Ödeme Yöntemi</th>
+                                <th>İşlem Sayısı</th>
+                                <th>Toplam Tutar</th>
+                                <th>Ortalama</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for method in payment_methods %}
+                            <tr>
+                                <td>
+                                    {% if method.payment_method == 'cash' %}
+                                        <i class="fas fa-money-bill-wave me-2"></i>Nakit
+                                    {% elif method.payment_method == 'card' %}
+                                        <i class="fas fa-credit-card me-2"></i>Kredi/Banka Kartı
+                                    {% else %}
+                                        <i class="fas fa-question-circle me-2"></i>{{ method.payment_method|title }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ method.count }}</td>
+                                <td>{{ "%.2f"|format(method.total) }} ₺</td>
+                                <td>{{ "%.2f"|format(method.total / method.count) }} ₺</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                    <h5>Henüz Ödeme Verisi Yok</h5>
+                    <p class="text-muted">Ödeme verileri burada görüntülenecektir.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0">Bugünkü Ödemeler</h5>
+            </div>
+            <div class="card-body">
+                {% if today_payments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Ödeme ID</th>
+                                <th>Sipariş ID</th>
+                                <th>Masa</th>
+                                <th>Müşteri</th>
+                                <th>Tutar</th>
+                                <th>Yöntem</th>
+                                <th>Saat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in today_payments %}
+                            <tr>
+                                <td>{{ payment.id }}</td>
+                                <td>{{ payment.order_id }}</td>
+                                <td>{{ payment.order.table.name if payment.order.table else 'N/A' }}</td>
+                                <td>{{ payment.order.customer.name if payment.order.customer else 'N/A' }}</td>
+                                <td>{{ "%.2f"|format(payment.amount) }} ₺</td>
+                                <td>
+                                    {% if payment.payment_method == 'cash' %}
+                                        <span class="badge bg-success">Nakit</span>
+                                    {% elif payment.payment_method == 'card' %}
+                                        <span class="badge bg-primary">Kart</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ payment.payment_method|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ payment.created_at|datetime_tr('%H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-day fa-3x text-muted mb-3"></i>
+                    <h5>Bugün Ödeme Yok</h5>
+                    <p class="text-muted">Bugün henüz ödeme yapılmamış.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0">Bu Ayki Ödemeler</h5>
+            </div>
+            <div class="card-body">
+                {% if monthly_payments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Ödeme ID</th>
+                                <th>Sipariş ID</th>
+                                <th>Masa</th>
+                                <th>Müşteri</th>
+                                <th>Tutar</th>
+                                <th>Yöntem</th>
+                                <th>Tarih</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in monthly_payments %}
+                            <tr>
+                                <td>{{ payment.id }}</td>
+                                <td>{{ payment.order_id }}</td>
+                                <td>{{ payment.order.table.name if payment.order.table else 'N/A' }}</td>
+                                <td>{{ payment.order.customer.name if payment.order.customer else 'N/A' }}</td>
+                                <td>{{ "%.2f"|format(payment.amount) }} ₺</td>
+                                <td>
+                                    {% if payment.payment_method == 'cash' %}
+                                        <span class="badge bg-success">Nakit</span>
+                                    {% elif payment.payment_method == 'card' %}
+                                        <span class="badge bg-primary">Kart</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ payment.payment_method|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ payment.created_at|datetime_tr('%d.%m.%Y') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                    <h5>Bu Ay Ödeme Yok</h5>
+                    <p class="text-muted">Bu ay henüz ödeme yapılmamış.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

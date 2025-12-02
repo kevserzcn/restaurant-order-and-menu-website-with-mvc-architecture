@@ -1,0 +1,239 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Profil - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #ffffff;
+    }
+    
+    h2, h5 {
+        color: #ff8000;
+        font-weight: 600;
+    }
+    
+    .admin-card {
+        background: linear-gradient(135deg, #fff7f0 0%, #ffffff 100%);
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(255, 128, 0, 0.1);
+        margin-bottom: 25px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .admin-card:hover {
+        box-shadow: 0 6px 20px rgba(255, 128, 0, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #ffe5cc 0%, #ffd9b3 100%);
+        border-bottom: 2px solid #ff8000;
+        padding: 15px 20px;
+    }
+    
+    .card-body {
+        padding: 30px;
+    }
+    
+    .form-label {
+        color: #ff8000;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        border: 2px solid #ffe5cc;
+        border-radius: 8px;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #ff8000;
+        box-shadow: 0 0 0 0.2rem rgba(255, 128, 0, 0.15);
+    }
+    
+    .form-control:disabled {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        color: #6c757d;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #ff8000 0%, #e67300 100%) !important;
+        border: none !important;
+        border-radius: 8px;
+        padding: 10px 30px;
+        font-weight: 600;
+        color: white !important;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #e67300 0%, #cc6600 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 128, 0, 0.3);
+        color: white !important;
+    }
+    
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+    }
+    
+    .profile-info-card {
+        background: linear-gradient(135deg, #fff7f0 0%, #ffffff 100%);
+        border: 2px solid #ffe5cc;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #ffe5cc;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        color: #ff8000;
+        font-weight: 600;
+        min-width: 120px;
+    }
+    
+    .info-value {
+        color: #333;
+    }
+    
+    .section-divider {
+        border-top: 2px dashed #ffe5cc;
+        margin: 30px 0;
+    }
+    
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+    
+    .password-section {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px dashed #ffe5cc;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-user-cog me-2"></i>Profilim</h2>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Hesap Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('admin.profile') }}">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-user me-1"></i>Ad Soyad
+                        </label>
+                        <input type="text" class="form-control" name="name" 
+                               value="{{ admin_user.name }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-envelope me-1"></i>E-posta
+                        </label>
+                        <input type="email" class="form-control" name="email" 
+                               value="{{ admin_user.email }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-hashtag me-1"></i>Kullanıcı ID
+                        </label>
+                        <input type="text" class="form-control" value="{{ admin_user.id }}" disabled>
+                    </div>
+                    
+                    <div class="password-section">
+                        <h5 class="mb-3"><i class="fas fa-key me-2"></i>Şifre Değiştir</h5>
+                        <p class="text-muted mb-3">Şifrenizi değiştirmek istiyorsanız aşağıdaki alanları doldurun. Değiştirmek istemiyorsanız boş bırakın.</p>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-lock me-1"></i>Mevcut Şifre
+                            </label>
+                            <input type="password" class="form-control" name="current_password" 
+                                   placeholder="Mevcut şifrenizi girin">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-lock me-1"></i>Yeni Şifre
+                            </label>
+                            <input type="password" class="form-control" name="new_password" 
+                                   placeholder="Yeni şifrenizi girin">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-lock me-1"></i>Yeni Şifre (Tekrar)
+                            </label>
+                            <input type="password" class="form-control" name="confirm_password" 
+                                   placeholder="Yeni şifrenizi tekrar girin">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

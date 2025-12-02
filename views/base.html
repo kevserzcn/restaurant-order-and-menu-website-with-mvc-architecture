@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Restoran Menü Sistemi{% endblock %}</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=RocknRoll+One&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <style>
+        html, body {
+            min-height: 100vh;
+            width: 100%;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #ffffff;
+            color: #222;
+            min-height: 100vh;
+        }
+        .theme-gradient {
+            background: linear-gradient(180deg, #ffffff 0%, #ffffff 45%, #003087 45%, #003087 100%) !important;
+        }
+        main.container {
+            max-width: 1400px !important;
+            padding: 2.5rem 1rem 4rem 1rem !important;
+            background: transparent;
+        }
+        .card, .category-card, .category-section, .menu-header, .welcome-header {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        }
+        @media (max-width: 992px) {
+            main.container {
+                padding: 1.5rem 0.5rem 2rem 0.5rem !important;
+            }
+        }
+        @media (max-width: 768px) {
+            main.container {
+                padding: 0.5rem 0.2rem 1rem 0.2rem !important;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body {% block body_attributes %}{% endblock %}>    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% if request.path.startswith('/user/') and is_user_logged_in %}{{ url_for('user.dashboard') }}{% elif request.path.startswith('/admin/') and is_admin_logged_in %}{{ url_for('admin.dashboard') }}{% elif is_admin_logged_in %}{{ url_for('admin.dashboard') }}{% elif is_user_logged_in %}{{ url_for('user.dashboard') }}{% else %}{{ url_for('auth.index') }}{% endif %}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Ablaların Yeri" height="80" class="me-2" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                <i class="fas fa-utensils me-2" style="display:none;"></i>
+                Ablaların Yeri
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if is_user_logged_in %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('user.dashboard') }}">
+                                <i class="fas fa-home me-1"></i>Ana Sayfa
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('user.menu') }}">
+                                <i class="fas fa-book me-1"></i>Menü
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('user.cart') }}">
+                                <i class="fas fa-shopping-cart me-1"></i>Sepet
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('user.orders') }}">
+                                <i class="fas fa-list me-1"></i>Siparişlerim
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('user.contact') }}">
+                                <i class="fas fa-envelope me-1"></i>İletişim
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('user.reviews') }}">
+                                <i class="fas fa-comments me-1"></i>Yorumlar
+                            </a>
+                        </li>
+                    {% elif is_admin_logged_in %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin.products') }}">
+                                <i class="fas fa-utensils me-1"></i>Ürünler
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin.tables') }}">
+                                <i class="fas fa-table me-1"></i>Masalar
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin.orders') }}">
+                                <i class="fas fa-list me-1"></i>Siparişler
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if is_admin_logged_in or is_user_logged_in %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>
+                                {{ current_user.name }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout', user_type='user' if is_user_logged_in else 'admin') }}">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Çıkış Yap
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Giriş Yap
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="container mt-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-light text-center py-3 mt-5">
+        <div class="container">
+            <p>&copy; 2025 Ablaların Yeri. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
