@@ -1,3 +1,5 @@
+<img width="2386" height="1315" alt="Burhan altıntop" src="https://github.com/user-attachments/assets/b8d8d41b-8679-478d-96bc-d56a55b60808" />
+
 # 🍽️ Restoran Sipariş ve Menü Yönetim Sistemi
 
 **Flask MVC** ile geliştirilmiş profesyonel, ölçeklenebilir ve modern restoran yönetim sistemi.
@@ -589,6 +591,16 @@ CREATE TABLE payments (
 - **Controller Sayısı**: 4
 - **Endpoint Sayısı**: 60+
 
+## Team Members
+
+|                       | Name                  | Socials |
+|-----------------------|-----------------------|---------|
+| <img src="https://github.com/user-attachments/assets/efe58383-952e-4a8d-8cbe-e61af49eeb22" width="100"/> | Elif KOŞAR | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/elifkosar/) |
+| <img src="https://github.com/user-attachments/assets/5e67c63d-e74b-46a4-8ea7-a893649ee35c" width="100"/> | Kevser ÖZCAN | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/kevser-%C3%B6zcan-270817251/) |
+| <img src="https://github.com/user-attachments/assets/47eb2d56-45df-438e-9544-c176a78c788a" width="100"/> | Bahriye İŞGÖR | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/bahriye-isgor/) |
+| <img src="https://github.com/user-attachments/assets/76a0feba-c0cf-4d6c-b008-d6acc55b8fa3" width="100"/> | Rümeysa YURTSEVER | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/rumeysayurtsever/) |
+| <img src="https://github.com/user-attachments/assets/6a71172f-6d59-4fb1-a9c1-e1cd9bc2f3d0" width="100"/> | İrem Naz KAYA | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/irem-naz-kaya-86a2b025a/) |
+
 
 ## 🙏 Teşekkürler
 
@@ -598,10 +610,6 @@ CREATE TABLE payments (
 
 **🍽️ Afiyet Olsun! 🍽️**
 
-Made with ❤️ by [Kevser ÖZCAN][Elif KOŞAR][Bahriye İŞGÖR][Rümeysa YURTSEVER][İrem Naz Kaya][Feray Yaren TURASAY]
-
-
-<img width="1890" height="945" alt="463389088-0ee31e1e-47c5-4103-89f0-3174b6843531" src="https://github.com/user-attachments/assets/f0f0c4e6-7252-4485-95a1-54c62ca23ed7" />
+Made with ❤️ by [Kevser ÖZCAN][Elif KOŞAR][Bahriye İŞGÖR][Rümeysa YURTSEVER][İrem Naz Kaya]
 
 </div>
-
